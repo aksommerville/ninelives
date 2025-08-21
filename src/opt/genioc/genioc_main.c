@@ -81,10 +81,10 @@ static int genioc_init(int argc,char **argv) {
     struct io_video_setup setup={
       .w=0,
       .h=0,
-      .fbw=160,//TODO is this knowable?
+      .fbw=160,
       .fbh=90,
       .fullscreen=0,
-      .title="TODO: Game title",
+      .title="Nine Lives",
       .iconrgba=0,
       .iconw=0,
       .iconh=0,

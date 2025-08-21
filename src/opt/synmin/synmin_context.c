@@ -2,6 +2,14 @@
 
 struct synmin synmin={0};
 
+/* EXPERIMENT: Would it sound nicer to use a wave table, like I do in bigger synths?
+ * ...I like it.
+ */
+#define WAVE_SIZE_BITS 10
+#define WAVE_SIZE_SAMPLES (1<<WAVE_SIZE_BITS)
+#define WAVE_SHIFT (32-WAVE_SIZE_BITS)
+static float wave[WAVE_SIZE_SAMPLES];
+
 /* Init.
  */
  
@@ -26,6 +34,11 @@ int synmin_init(int rate,int chanc) {
   for (p=fpv,i=64;i-->0;dst++,p++) {
     *dst=(int)((*p)*4294967296.0f);
   }
+  
+  /* Calculate the wave.
+   */
+  for (p=wave,i=WAVE_SIZE_SAMPLES>>1;i-->0;p++) *p=(i*2.0f)/(WAVE_SIZE_SAMPLES>>1)-1.0f;
+  for (i=WAVE_SIZE_SAMPLES>>1;i-->0;p++) *p=1.0f-(i*2.0f)/(WAVE_SIZE_SAMPLES>>1);
   
   return 0;
 }
@@ -53,11 +66,24 @@ void synmin_song(const void *v,int c,int force,int repeat) {
  
 static void synmin_voice_update(float *v,int c,struct synmin_voice *voice) {
   int i=c;
-  for (;i-->0;v++) {
-    voice->dp+=voice->ddp;
-    voice->p+=voice->dp;
-    if (voice->p&0x80000000) (*v)+=voice->level;
-    else (*v)-=voice->level;
+  if (voice->ttl<2000) {
+    for (;i-->0;v++) {
+      voice->dp+=voice->ddp;
+      voice->p+=voice->dp;
+      voice->level*=0.990f;
+      (*v)+=voice->level*wave[((unsigned int)voice->p)>>WAVE_SHIFT];
+    }
+  } else {
+    for (;i-->0;v++) {
+      voice->dp+=voice->ddp;
+      voice->p+=voice->dp;
+      #if 1 /* wavetable */
+        (*v)+=voice->level*wave[((unsigned int)voice->p)>>WAVE_SHIFT];
+      #else /* square */
+        if (voice->p&0x80000000) (*v)+=voice->level;
+        else (*v)-=voice->level;
+      #endif
+    }
   }
   voice->ttl-=c;
 }

@@ -8,37 +8,14 @@
 #include "shovel/shovel.h"
 #include "opt/synmin/synmin.h"
 
-extern const int meadowlark_len;
-extern const unsigned char meadowlark[];
+extern const unsigned char nine_lives[];
+extern const int nine_lives_len;
 
-extern const int red_alarm_len;
-extern const unsigned char red_alarm[];
+extern const unsigned char get_over_here[];
+extern const int get_over_here_len;
 
-extern const int we_need_norris_len;
-extern const unsigned char we_need_norris[];
-
-static const unsigned char song_abc[]={
-#define DELAY(ms) (ms>>4)-1, // 16..2048
-#define NOTE(a,z,level,dur16ms) 0x80|(a<<1)|(z>>5),0xff&((z<<3)|(level>>2)),0xff&((level<<6)|dur16ms), // note 0..63, level 0..31, dur 0..31
-  NOTE(0x20,0x20,0x00,0x04)
-  DELAY(96)
-  NOTE(0x22,0x22,0x04,0x04)
-  DELAY(96)
-  NOTE(0x23,0x23,0x08,0x04)
-  DELAY(96)
-  NOTE(0x25,0x25,0x0c,0x04)
-  DELAY(96)
-  NOTE(0x27,0x27,0x10,0x04)
-  DELAY(96)
-  NOTE(0x28,0x28,0x14,0x04)
-  DELAY(96)
-  NOTE(0x2a,0x2a,0x18,0x04)
-  DELAY(96)
-  NOTE(0x2c,0x2c,0x1f,0x04)
-  DELAY(96)
-#undef DELAY
-#undef NOTE
-};
+extern const unsigned char caught_the_mouse[];
+extern const int caught_the_mouse_len;
 
 static float buffer[1024];
  
@@ -61,11 +38,9 @@ void sha_update(int framec) {
           int srcc=0;
           switch (msg[1]) {
             case 0: break; // Explicitly empty.
-            case 1: src=meadowlark; srcc=meadowlark_len; break;
-            case 2: break; // Was even_tippier_toe, but that had too many unshovellable bits.
-            case 3: src=song_abc; srcc=sizeof(song_abc); break;
-            case 4: src=red_alarm; srcc=red_alarm_len; break;
-            case 5: src=we_need_norris; srcc=we_need_norris_len; break;
+            case 1: src=nine_lives; srcc=nine_lives_len; break;
+            case 2: src=get_over_here; srcc=get_over_here_len; break;
+            case 3: src=caught_the_mouse; srcc=caught_the_mouse_len; break;
           }
           synmin_song(src,srcc,0,1);
         } break;
