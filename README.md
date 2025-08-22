@@ -12,12 +12,13 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Flying.
 - [ ] Spikes.
 - [ ] Laser.
-- [ ] Lay eggs.
+- [x] Lay eggs.
 - [x] Use corpses as platforms.
 - [ ] Exit map.
 - [ ] With the core mechanics above implemented, make the call on removing text and hello.
 - [ ] Decorative mouse at start of each map.
 - [ ] Gore under the corpse. If impaled, have it drip blood onto the floor.
+- [ ] Show remaining eggs at the bottom of the screen.
 - [ ] Breathing fire.
 - [ ] Game over. Win only; if you die, just the map resets.
 - [ ] Output video sizing is imperfect. Visible especially at 1x. (xegl). Update Shovel if we fix it.

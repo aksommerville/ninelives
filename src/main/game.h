@@ -33,6 +33,7 @@ extern struct g {
 
   struct sprite spritev[SPRITE_LIMIT];
   int spritec;
+  int eggc; // Starts at 8, how many remain to be laid. Eggs in the field don't count.
 } g;
 
 int render_init();
@@ -49,8 +50,9 @@ int load_map(int id);
 
 // [noteida 0..63,noteidz 0..63,level 0..31,duration 16ms]
 #define SFX(tag) sh_ms("\x01"SFX_##tag,5)
-#define SFX_jump "\x20\x28\x10\x10"
-#define SFX_flap "\x18\x14\x08\x0c"
+#define SFX_jump   "\x20\x28\x10\x10"
+#define SFX_flap   "\x18\x14\x08\x0c"
+#define SFX_layegg "\x24\x22\x0c\x14"
 
 #if USE_native
   #include <stdio.h>

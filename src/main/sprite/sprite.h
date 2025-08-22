@@ -33,5 +33,6 @@ struct sprite *sprite_spawn(const struct sprite_type *type,int x,int y);
 
 extern const struct sprite_type sprite_type_hero;
 extern const struct sprite_type sprite_type_corpse;
+extern const struct sprite_type sprite_type_egg;
 
 #endif
