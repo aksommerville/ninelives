@@ -1,13 +1,32 @@
 #include "main/game.h"
 
 #define ANIMFRAME sprite->iv[0]
+#define JUMPP sprite->iv[1]
+#define WINGS sprite->iv[2]
+#define SEATED sprite->iv[3]
 #define ANIMCLOCK sprite->fv[0]
+#define FLAPCLOCK sprite->fv[1]
+
+/* Definition of the jump curve.
+ * This may be aborted anywhere.
+ * Should end with a bunch of zeroes. Those are meaningful, they define a period before gravity kicks in.
+ */
+static const int jumpv[]={
+  -3,-3,-3,-2,-2,-2,-2,-1,-1,-1,-1,-1,0,0,0,0,0,
+};
+static const int jumpc=sizeof(jumpv)/sizeof(jumpv[0]);
+
+static const int flyv[]={
+  -2,-2,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+};
+static const int flyc=sizeof(flyv)/sizeof(flyv[0]);
 
 static void _hero_init(struct sprite *sprite) {
   sprite->tileid=0x50;
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
+  WINGS=1;//XXX TEMP
 }
 
 /* Physics tests.
@@ -86,14 +105,44 @@ static int hero_collide(struct sprite *sprite,int dx,int dy) {
 static void _hero_update(struct sprite *sprite,double elapsed) {
 
   /* Vertical motion: Jumping, flying, and gravity.
-   *TODO highly temporary
    */
-  if (g.input&SH_BTN_SOUTH) {
-    sprite->y--;
+  SEATED=0; // Until gravity says otherwise.
+  if (WINGS) { // Flying maybe.
+    if (g.input&SH_BTN_SOUTH) {
+      if (FLAPCLOCK<=0.0) SFX(flap);
+      FLAPCLOCK+=elapsed;
+      if (JUMPP<flyc) {
+        sprite->y+=flyv[JUMPP];
+        hero_collide(sprite,0,-1);
+        JUMPP++;
+      } else {
+        sprite->y++;
+        if (hero_collide(sprite,0,1)) {
+          SEATED=1;
+        }
+      }
+    } else {
+      JUMPP=0;
+      FLAPCLOCK=0.0;
+      sprite->y++;
+      if (hero_collide(sprite,0,1)) {
+        SEATED=1;
+      }
+    }
+  } else if ((g.input&SH_BTN_SOUTH)&&(JUMPP<jumpc)) { // Jumping.
+    if (!JUMPP) SFX(jump);
+    sprite->y+=jumpv[JUMPP];
     hero_collide(sprite,0,-1);
-  } else {
+    JUMPP++;
+  } else { // Falling.
+    JUMPP=jumpc;
     sprite->y++;
-    hero_collide(sprite,0,1);
+    if (hero_collide(sprite,0,1)) {
+      SEATED=1;
+      if (!(g.input&SH_BTN_SOUTH)) { // Restore jump power.
+        JUMPP=0;
+      }
+    }
   }
 
   //TODO Lay eggs.
@@ -132,12 +181,23 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
 
 static void _hero_render(struct sprite *sprite) {
   uint8_t tileid=sprite->tileid;
-  if (ANIMFRAME) tileid++;
+  if (ANIMFRAME&&SEATED) tileid++;
   int dstx=sprite->x;
   int dsty=sprite->y;
   int srcx=(tileid&0x0f)*TILESIZE;
   int srcy=(tileid>>4)*TILESIZE;
   r1b_img32_blit_img1(&g.fb,&g.graphics,dstx,dsty,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
+  if (WINGS) {
+    uint8_t wtileid=0x61;
+         if (FLAPCLOCK>0.100) wtileid=0x63;
+    else if (FLAPCLOCK>0.000) wtileid=0x62;
+    srcx=(wtileid&0x0f)*TILESIZE;
+    srcy=(wtileid>>4)*TILESIZE;
+    int wdstx=dstx;
+    int wdsty=dsty;
+    if (sprite->xform&R1B_XFORM_XREV) wdstx-=2; else wdstx+=2;
+    r1b_img32_blit_img1(&g.fb,&g.graphics,wdstx,wdsty,srcx,srcy,TILESIZE,TILESIZE,0,0xffffffff,sprite->xform);
+  }
 }
 
 /* Type definition.

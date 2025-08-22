@@ -47,6 +47,11 @@ int draw_string(struct r1b_img32 *dst,int dstx,int dsty,const char *src,int srcc
 
 int load_map(int id);
 
+// [noteida 0..63,noteidz 0..63,level 0..31,duration 16ms]
+#define SFX(tag) sh_ms("\x01"SFX_##tag,5)
+#define SFX_jump "\x20\x28\x10\x10"
+#define SFX_flap "\x18\x14\x08\x0c"
+
 #if USE_native
   #include <stdio.h>
   #include <string.h>

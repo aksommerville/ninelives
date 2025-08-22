@@ -8,8 +8,8 @@ struct sprite;
 struct sprite_type;
 
 #define SPRITE_LIMIT 32
-#define SPRITE_IV_SIZE 4
-#define SPRITE_FV_SIZE 4
+#define SPRITE_IV_SIZE 8
+#define SPRITE_FV_SIZE 8
 
 struct sprite {
   const struct sprite_type *type;

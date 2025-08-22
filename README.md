@@ -8,8 +8,8 @@ Entry for js13k 2025, theme "BLACK CAT".
 
 - [x] Rephrase sprite position as ints (x,y,w,h). They're mostly going to be the same size, and recording the center position is i think more trouble than it's worth.
 - [x] Hero sprite: Spawn, motion, collisions, jump.
-- [ ] Proper jumping.
-- [ ] Flying.
+- [x] Proper jumping.
+- [x] Flying.
 - [ ] Spikes.
 - [ ] Laser.
 - [ ] Lay eggs.
@@ -17,7 +17,7 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [ ] Exit map.
 - [ ] With the core mechanics above implemented, make the call on removing text and hello.
 - [ ] Decorative mouse at start of each map.
-- [ ] Flying.
+- [ ] Gore under the corpse. If impaled, have it drip blood onto the floor.
 - [ ] Breathing fire.
 - [ ] Game over. Win only; if you die, just the map resets.
 - [ ] Output video sizing is imperfect. Visible especially at 1x. (xegl). Update Shovel if we fix it.
@@ -41,6 +41,9 @@ If we keep it reasonably thin, we could probly get like 5 or 10 minutes of music
 We could probably drop text. Might still need numbers, for presenting the score or clock.
 
 I assumed there would be Hello and Gameover modals. Don't necessarily need those.
+
+Jump: Can ascend 2 meters, not 3. With a single corpse, can ascend 3.
+Laterally at same elevation, can clear a 5-meter gap, not 6.
 
 ## Map Format
 
