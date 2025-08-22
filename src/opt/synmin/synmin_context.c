@@ -66,26 +66,37 @@ void synmin_song(const void *v,int c,int force,int repeat) {
  
 static void synmin_voice_update(float *v,int c,struct synmin_voice *voice) {
   int i=c;
-  if (voice->ttl<2000) {
+  if (voice->dlevel<0.0f) { // Fading out.
     for (;i-->0;v++) {
+      if ((voice->level+=voice->dlevel)<=0.0f) {
+        voice->ttl=0;
+        break;
+      }
       voice->dp+=voice->ddp;
       voice->p+=voice->dp;
-      voice->level*=0.990f;
       (*v)+=voice->level*wave[((unsigned int)voice->p)>>WAVE_SHIFT];
     }
-  } else {
+  } else if (voice->dlevel>0.0f) { // Fading in.
+    for (;i-->0;v++) {
+      if ((voice->level+=voice->dlevel)>=voice->tlevel) {
+        voice->level=voice->tlevel;
+        voice->dlevel=0.0f;
+      }
+      voice->dp+=voice->ddp;
+      voice->p+=voice->dp;
+      (*v)+=voice->level*wave[((unsigned int)voice->p)>>WAVE_SHIFT];
+    }
+  } else { // Stable level.
     for (;i-->0;v++) {
       voice->dp+=voice->ddp;
       voice->p+=voice->dp;
-      #if 1 /* wavetable */
-        (*v)+=voice->level*wave[((unsigned int)voice->p)>>WAVE_SHIFT];
-      #else /* square */
-        if (voice->p&0x80000000) (*v)+=voice->level;
-        else (*v)-=voice->level;
-      #endif
+      (*v)+=voice->level*wave[((unsigned int)voice->p)>>WAVE_SHIFT];
     }
   }
   voice->ttl-=c;
+  if ((voice->ttl>0)&&(voice->ttl<1000)&&(voice->dlevel>=0.0f)) {
+    voice->dlevel=-voice->level/voice->ttl;
+  }
 }
 
 /* Generate signal.
@@ -222,7 +233,9 @@ void synmin_note(unsigned char noteida,unsigned char noteidz,unsigned char level
   
   voice->p=0;
   if ((voice->ttl=synmin_frames_from_ms((1+dur16ms)<<4))<1) voice->ttl=1;
-  voice->level=0.050f+level/200.0f;
+  voice->tlevel=0.050f+level/200.0f;
+  voice->level=0.0f;
+  voice->dlevel=voice->tlevel/500.0f;//TODO rate-sensitive attack duration
   voice->dp=synmin.ratev[noteida];
   if (noteida==noteidz) {
     voice->ddp=0;

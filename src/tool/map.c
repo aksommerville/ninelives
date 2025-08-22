@@ -9,6 +9,7 @@
 #define TILE_SPIKES 2
 #define TILE_LASER 3
 #define TILE_HERO 4
+#define TILE_DOOR 5
 
 /* Compile map.
  */
@@ -33,6 +34,7 @@ int tool_convert_mapbin_maptext(struct sr_encoder *dst,const char *src,int srcc,
       else if ((src[0]=='S')&&(src[1]=='s')) *mapp=TILE_SPIKES;
       else if ((src[0]=='L')&&(src[1]=='l')) *mapp=TILE_LASER;
       else if ((src[0]=='H')&&(src[1]=='h')) *mapp=TILE_HERO;
+      else if ((src[0]=='D')&&(src[1]=='d')) *mapp=TILE_DOOR;
       else {
         fprintf(stderr,"%s:%d: Unknown tile '%.2s'.\n",path,row+1,src);
         return -2;
@@ -67,11 +69,11 @@ int tool_convert_mapbin_maptext(struct sr_encoder *dst,const char *src,int srcc,
         } break;
       case TILE_WALL: {
           while (c>=64) {
-            sr_encode_u8(dst,0x3f);
+            sr_encode_u8(dst,0x7f);
             c-=64;
           }
           if (c>0) {
-            sr_encode_u8(dst,c-1);
+            sr_encode_u8(dst,0x40|(c-1));
           }
         } break;
       case TILE_SPIKES: {
@@ -83,16 +85,9 @@ int tool_convert_mapbin_maptext(struct sr_encoder *dst,const char *src,int srcc,
             sr_encode_u8(dst,0x80|(c-1));
           }
         } break;
-      case TILE_LASER: {
-          while (c-->0) {
-            sr_encode_u8(dst,0xc1);
-          }
-        } break;
-      case TILE_HERO: {
-          while (c-->0) {
-            sr_encode_u8(dst,0xc0);
-          }
-        } break;
+      case TILE_LASER: while (c-->0) sr_encode_u8(dst,0xc1); break;
+      case TILE_HERO: while (c-->0) sr_encode_u8(dst,0xc0); break;
+      case TILE_DOOR: while (c-->0) sr_encode_u8(dst,0xc2); break;
       default: {
           fprintf(stderr,"%s:%d: map tile 0x%02x\n",__FILE__,__LINE__,tileid);
           return -2;

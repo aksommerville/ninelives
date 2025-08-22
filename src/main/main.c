@@ -23,13 +23,12 @@ int shm_init() {
 
 void shm_update(double elapsed) {
   
-  // A bit heavy-handed, but let's redraw the framebuffer from scratch each frame.
-  r1b_img32_fill_rect(&g.fb,0,0,FBW,FBH,0xffff8000);
+  memcpy(g.fb.v,g.bgbits.v,FBW*FBH*4);
   
-  draw_string(&g.fb,1,1,"The quick brown fox jumps",-1,0xffffffff);
-  draw_string(&g.fb,1,9,"over the lazy dog.",-1,0xffffffff);
+  //draw_string(&g.fb,1,1,"The quick brown fox jumps",-1,0xffffffff);
+  //draw_string(&g.fb,1,9,"over the lazy dog.",-1,0xffffffff);
   
-  r1b_img32_blit_img1(&g.fb,&g.graphics,80,50,0,40,8,8,0,0xff000000,0);
+  //r1b_img32_blit_img1(&g.fb,&g.graphics,80,50,0,40,8,8,0,0xff000000,0);
   
   sh_fb(g.fb.v,FBW,FBH);
 }

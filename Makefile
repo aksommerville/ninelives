@@ -73,7 +73,7 @@ define WEBLIKE_RULES
   all:$$($1_ROM) $$($1_HTML) $$($1_ZIP)
   $$($1_ROM):$$($1_MAIN_WASM) $$($1_AUDIO_WASM) $(tool_EXE);$$(PRECMD) $(tool_EXE) pack -o$$@ $$($1_MAIN_WASM) $$($1_AUDIO_WASM)
   $$($1_HTML):$(WEBRT_SRCFILES) $(tool_EXE);$$(PRECMD) $(tool_EXE) html -o$$@ src/www/index.html
-  $$($1_ZIP):$$($1_ROM) $$($1_HTML);$$(PRECMD) rm -f $$@ ; zip -j $$@ $$^
+  $$($1_ZIP):$$($1_ROM) $$($1_HTML);$$(PRECMD) rm -f $$@ ; zip -j $$@ $$^ ; ls -l $$@
 endef
 
 $(foreach T,$(WEBLIKE_TARGETS),$(eval $(call WEBLIKE_RULES,$T)))

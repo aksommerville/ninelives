@@ -5,6 +5,7 @@
 #define SPACEW 3
 
 static uint32_t fb[FBW*FBH];
+static uint32_t bgbits[FBW*FBH];
 
 R1B_DECL(graphics)
 
@@ -40,6 +41,11 @@ int render_init() {
   g.fb.w=FBW;
   g.fb.h=FBH;
   g.fb.stridewords=FBW;
+  
+  g.bgbits.v=bgbits;
+  g.bgbits.w=FBW;
+  g.bgbits.h=FBH;
+  g.bgbits.stridewords=FBW;
   
   g.graphics.w=graphics_w;
   g.graphics.h=graphics_h;

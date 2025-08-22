@@ -12,6 +12,7 @@
 #define TILE_SPIKES 2
 #define TILE_LASER 3
 #define TILE_HERO 4
+#define TILE_DOOR 5
 
 #include "shovel/shovel.h"
 #include "opt/r1b/r1b.h"
@@ -20,6 +21,7 @@
 extern struct g {
   struct r1b_img32 fb;
   struct r1b_img1 graphics;
+  struct r1b_img32 bgbits; // Size of fb and minimum stride -- safe to just memcpy onto fb.
   
   /* Logical map, with a 1-cell border.
    * Values are TILE_*.
@@ -47,6 +49,7 @@ int load_map(int id);
   #define stderr 0
   static inline void fprintf(void *f,const char *fmt,...) {}
   void *memset(void *s, int n, long c);
+  void *memcpy(void *dst, const void *src, long c);
 #endif
 
 #endif

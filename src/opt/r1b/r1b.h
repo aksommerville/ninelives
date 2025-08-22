@@ -8,9 +8,9 @@
 #ifndef R1B_H
 #define R1B_H
 
-// No "SWAP" transform. It's complicated and doesn't come up that often.
 #define R1B_XFORM_XREV 1
 #define R1B_XFORM_YREV 2
+#define R1B_XFORM_SWAP 4 /* !!! WARNING !!! When SWAP is in play, caller must provide valid bounds. Clipping becomes complicated. */
 
 struct r1b_img32 {
   unsigned int *v; // xbgr, ie red is stored first

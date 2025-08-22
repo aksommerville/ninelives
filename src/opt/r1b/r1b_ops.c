@@ -34,6 +34,7 @@ void r1b_img32_blit_img1(
   if (!xbgr0&&!xbgr1) return; // Both colors transparent; automatically noop.
   
   // Clip both bounds to their edges, then get out if empty.
+  // Note that we're not respecting R1B_XFORM_SWAP here; that would make it too complicated, so instead we force that burden on the caller.
   if (dstx<0) {
     if (!(xform&R1B_XFORM_XREV)) srcx-=dstx;
     w+=dstx;
@@ -74,16 +75,16 @@ void r1b_img32_blit_img1(
   
   /* We'll always read (src) LRTB, since bitwise reading is a bit complicated.
    * Effect the transform on the (dst) side.
-   * From here, supporting a SWAP transform would be super simple. But the clipping above would be a nightmare.
    */
   int dminor=1,dmajor=dst->stridewords;
-  if (xform&R1B_XFORM_XREV) {
-    dminor=-1;
-    dstx+=w-1;
-  }
-  if (xform&R1B_XFORM_YREV) {
-    dmajor=-dst->stridewords;
-    dsty+=h-1;
+  switch (xform&(R1B_XFORM_XREV|R1B_XFORM_YREV|R1B_XFORM_SWAP)) {
+    case R1B_XFORM_XREV: dminor=-1; dstx+=w-1; break;
+    case R1B_XFORM_YREV: dmajor=-dst->stridewords; dsty+=h-1; break;
+    case R1B_XFORM_XREV|R1B_XFORM_YREV: dminor=-1; dstx+=w-1; dmajor=-dst->stridewords; dsty+=h-1; break;
+    case R1B_XFORM_SWAP: dminor=dst->stridewords; dmajor=1; break;
+    case R1B_XFORM_SWAP|R1B_XFORM_XREV: dminor=-dst->stridewords; dmajor=1; dsty+=w-1; break;
+    case R1B_XFORM_SWAP|R1B_XFORM_YREV: dminor=dst->stridewords; dmajor=-1; dstx+=h-1; break;
+    case R1B_XFORM_SWAP|R1B_XFORM_XREV|R1B_XFORM_YREV: dminor=-dst->stridewords; dmajor=-1; dsty+=w-1; dstx+=h-1; break;
   }
   unsigned int *dstrow=dst->v+dsty*dst->stridewords+dstx;
   const unsigned char *srcrow=src->v+srcy*src->stride+(srcx>>3);

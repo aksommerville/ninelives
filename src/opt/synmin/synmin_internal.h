@@ -12,6 +12,8 @@ struct synmin_voice {
   int p; // full range
   int dp;
   int ddp;
+  float dlevel;
+  float tlevel;
 };
 
 extern struct synmin {
