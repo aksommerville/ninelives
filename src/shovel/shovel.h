@@ -123,10 +123,9 @@ int sh_ss(const char *k,int kc,const char *v,int vc);
 #define SH_BTN_WEST       0x20 /* Secondary. */
 #define SH_BTN_AUX1       0x40
 
-/* Get the state of a virtual input device, keyed by player id.
- * Player zero is the aggregate of all devices, and most appropriate for single-player games.
+/* Get the state of the virtual input device.
  */
-int sh_in(int plrid);
+int sh_in();
 
 /* Framebuffer is packed 32-bit RGBX. Red in the first byte. The X component is ignored.
  * Pixels are packed LRTB, each row being (w*4) bytes long.

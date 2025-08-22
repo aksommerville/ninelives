@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html><head>
-<!-- TODO Put title and favicon here manually. -->
+<title>Nine Lives</title>
+<!-- TODO Put favicon here manually. -->
 <style>
 #aw{display:none}
 html{background:#000;color:#fff}
@@ -92,32 +93,22 @@ registerProcessor("AWP", P);
 const
   td = new TextDecoder("utf8"),
   te = new TextEncoder("utf8"),
-  inp = [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  km = { // Keyboard map: { [keyCode]: [playerid,btnid] }
-    ArrowLeft:  [1, 0x01],
-    ArrowRight: [1, 0x02],
-    ArrowUp:    [1, 0x04],
-    ArrowDown:  [1, 0x08],
-    Comma:      [1, 0x10],
-    Period:     [1, 0x20],
-    Enter:      [1, 0x40],
-    KeyA:       [2, 0x01],
-    KeyD:       [2, 0x02],
-    KeyW:       [2, 0x04],
-    KeyS:       [2, 0x08],
-    Space:      [2, 0x10],
-    KeyE:       [2, 0x20],
-    KeyR:       [2, 0x40],
-    Numpad4:    [3, 0x01],
-    Numpad6:    [3, 0x02],
-    Numpad8:    [3, 0x04],
-    Numpad5:    [3, 0x08],
-    Numpad2:    [3, 0x08],
-    Numpad0:    [3, 0x10],
-    NumpadAdd:  [3, 0x20],
-    NumpadEnter:[3, 0x40],
+  km = { // Keyboard map: { [keyCode]: btnid }
+    ArrowLeft:  0x01,
+    ArrowRight: 0x02,
+    ArrowUp:    0x04,
+    ArrowDown:  0x08,
+    Enter:      0x40,
+    KeyA:       0x01,
+    KeyD:       0x02,
+    KeyW:       0x04,
+    KeyS:       0x08,
+    Space:      0x10,
+    KeyE:       0x20,
+    KeyX:       0x20,
+    KeyZ:       0x10,
   };
-let wi, mem, rom, fb, fbw, fbh, trm, cvs, ctx, imd, pvt, actx, an, pau;
+let wi, mem, rom, fb, fbw, fbh, trm, cvs, ctx, imd, pvt, actx, an, pau, inp=0;
 function zs(p) {
   if (p < 0) return "";
   let c=0;
@@ -196,32 +187,26 @@ function ok(e) { // keydown,keyup
   const m = km[e.code];
   if (m) {
     if (e.type === "keydown") {
-      if (inp[m[0]] & m[1]) return;
-      inp[m[0]] |= m[1];
-      inp[0] |= m[1];
+      if (inp & m) return;
+      inp |= m;
     } else {
-      if (!(inp[m[0]] & m[1])) return;
-      inp[m[0]] &= ~m[1];
-      inp[0] &= ~m[1];
+      if (!(inp & m)) return;
+      inp &= ~m;
     }
   }
 }
 function gp() { // Poll gamepads. Assume Standard Mapping, and assign to players in order.
-  let pid = 0;
   for (const g of navigator?.getGamepads?.()) {
     const b = (p, d) => {
       if (g.buttons[p]?.value) {
-        if (inp[pid] & d) return;
-        inp[pid] |= d;
-        inp[0] |= d;
+        if (inp & d) return;
+        inp |= d;
       } else {
-        if (!(inp[pid] & d)) return;
-        inp[pid] &= ~d;
-        inp[0] &= ~d;
+        if (!(inp & d)) return;
+        inp &= ~d;
       }
     };
     if (g) {
-      pid++;
       b(0, 0x10); // south
       b(2, 0x20); // west
       b(9, 0x40); // start
@@ -296,7 +281,7 @@ addEventListener("load", _ => {
       sh_sg,
       sh_ss,
       sh_ms,
-      sh_in: p => inp[p],
+      sh_in: _ => inp,
       sh_fb,
     }});
   }).then(({module:m, instance:i}) => {

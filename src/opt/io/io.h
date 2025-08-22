@@ -121,7 +121,7 @@ void io_input_set_key(int keycode,int value);
 
 /* Shovel Platform API, implemented by input units.
  */
-int sh_in(int plrid);
+int sh_in();
 
 extern const char *io_input_driver_name;
 

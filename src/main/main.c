@@ -28,7 +28,7 @@ void shm_update(double elapsed) {
   /* Acquire input and react to global inputs.
    */
   g.pvinput=g.input;
-  g.input=sh_in(0);
+  g.input=sh_in();
   if (g.input!=g.pvinput) {
     if ((g.input&SH_BTN_AUX1)&&!(g.pvinput&SH_BTN_AUX1)) { sh_term(0); return; }
   }

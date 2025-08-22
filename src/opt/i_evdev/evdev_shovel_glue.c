@@ -5,14 +5,11 @@
 #include <string.h>
 #include <stdint.h>
 
-// Not including the aggregate player zero.
-#define PLAYER_LIMIT 8
-
 const char *io_input_driver_name="evdev";
 
 static struct {
   struct evdev *evdev;
-  uint8_t playerv[1+PLAYER_LIMIT];
+  uint8_t player;
 } i_evdev={0};
 
 /* Quit.
@@ -76,54 +73,39 @@ static void cb_button(struct evdev *evdev,struct evdev_device *device,int type,i
   //fprintf(stderr,"%s: %04x:%04x:%04x (0x%06x=%d) => plrid=%d btnid=0x%02x axis=%c\n",__func__,vid,pid,version,(type<<16)|code,value,plrid,btnid,axis);
   if (axis=='x') {
     if (value<0) {
-      if (i_evdev.playerv[plrid]&SH_BTN_LEFT) return;
-      i_evdev.playerv[plrid]|=SH_BTN_LEFT;
-      i_evdev.playerv[0]|=SH_BTN_LEFT;
-      i_evdev.playerv[plrid]&=~SH_BTN_RIGHT;
-      i_evdev.playerv[0]&=~SH_BTN_RIGHT;
+      if (i_evdev.player&SH_BTN_LEFT) return;
+      i_evdev.player|=SH_BTN_LEFT;
+      i_evdev.player&=~SH_BTN_RIGHT;
     } else if (value>0) {
-      if (i_evdev.playerv[plrid]&SH_BTN_RIGHT) return;
-      i_evdev.playerv[plrid]|=SH_BTN_RIGHT;
-      i_evdev.playerv[0]|=SH_BTN_RIGHT;
-      i_evdev.playerv[plrid]&=~SH_BTN_LEFT;
-      i_evdev.playerv[0]&=~SH_BTN_LEFT;
+      if (i_evdev.player&SH_BTN_RIGHT) return;
+      i_evdev.player|=SH_BTN_RIGHT;
+      i_evdev.player&=~SH_BTN_LEFT;
     } else {
-      if (!(i_evdev.playerv[plrid]&(SH_BTN_LEFT|SH_BTN_RIGHT))) return;
-      i_evdev.playerv[plrid]&=~SH_BTN_LEFT;
-      i_evdev.playerv[0]&=~SH_BTN_LEFT;
-      i_evdev.playerv[plrid]&=~SH_BTN_RIGHT;
-      i_evdev.playerv[0]&=~SH_BTN_RIGHT;
+      if (!(i_evdev.player&(SH_BTN_LEFT|SH_BTN_RIGHT))) return;
+      i_evdev.player&=~SH_BTN_LEFT;
+      i_evdev.player&=~SH_BTN_RIGHT;
     }
   } else if (axis=='y') {
     if (value<0) {
-      if (i_evdev.playerv[plrid]&SH_BTN_UP) return;
-      i_evdev.playerv[plrid]|=SH_BTN_UP;
-      i_evdev.playerv[0]|=SH_BTN_UP;
-      i_evdev.playerv[plrid]&=~SH_BTN_DOWN;
-      i_evdev.playerv[0]&=~SH_BTN_DOWN;
+      if (i_evdev.player&SH_BTN_UP) return;
+      i_evdev.player|=SH_BTN_UP;
+      i_evdev.player&=~SH_BTN_DOWN;
     } else if (value>0) {
-      if (i_evdev.playerv[plrid]&SH_BTN_DOWN) return;
-      i_evdev.playerv[plrid]|=SH_BTN_DOWN;
-      i_evdev.playerv[0]|=SH_BTN_DOWN;
-      i_evdev.playerv[plrid]&=~SH_BTN_UP;
-      i_evdev.playerv[0]&=~SH_BTN_UP;
+      if (i_evdev.player&SH_BTN_DOWN) return;
+      i_evdev.player|=SH_BTN_DOWN;
+      i_evdev.player&=~SH_BTN_UP;
     } else {
-      if (!(i_evdev.playerv[plrid]&(SH_BTN_UP|SH_BTN_DOWN))) return;
-      i_evdev.playerv[plrid]&=~SH_BTN_UP;
-      i_evdev.playerv[0]&=~SH_BTN_UP;
-      i_evdev.playerv[plrid]&=~SH_BTN_DOWN;
-      i_evdev.playerv[0]&=~SH_BTN_DOWN;
+      if (!(i_evdev.player&(SH_BTN_UP|SH_BTN_DOWN))) return;
+      i_evdev.player&=~SH_BTN_UP;
+      i_evdev.player&=~SH_BTN_DOWN;
     }
   } else if (btnid) {
-    if ((plrid<0)||(plrid>PLAYER_LIMIT)) return;
     if (value) {
-      if (i_evdev.playerv[plrid]&btnid) return;
-      i_evdev.playerv[plrid]|=btnid;
-      i_evdev.playerv[0]|=btnid;
+      if (i_evdev.player&btnid) return;
+      i_evdev.player|=btnid;
     } else {
-      if (!(i_evdev.playerv[plrid]&btnid)) return;
-      i_evdev.playerv[plrid]&=~btnid;
-      i_evdev.playerv[0]&=~btnid;
+      if (!(i_evdev.player&btnid)) return;
+      i_evdev.player&=~btnid;
     }
   }
 }
@@ -160,6 +142,8 @@ static struct kmap { int keycode,plrid,btnid,value; } kmapv[]={
   {0x00070015,2,SH_BTN_AUX1},    // r
   {0x00070016,2,SH_BTN_DOWN},    // s
   {0x0007001a,2,SH_BTN_UP},      // w
+  {0x0007001b,2,SH_BTN_WEST},    // x
+  {0x0007001d,2,SH_BTN_SOUTH},   // z
   {0x00070028,1,SH_BTN_AUX1},    // enter
   {0x0007002c,2,SH_BTN_SOUTH},   // space
   {0x00070036,1,SH_BTN_SOUTH},   // comma
@@ -194,20 +178,17 @@ void io_input_set_key(int keycode,int value) {
     if (kmap->value) return;
     //TODO stateless actions
     kmap->value=1;
-    i_evdev.playerv[kmap->plrid]|=kmap->btnid;
-    i_evdev.playerv[0]|=kmap->btnid;
+    i_evdev.player|=kmap->btnid;
   } else {
     if (!kmap->value) return;
     kmap->value=0;
-    i_evdev.playerv[kmap->plrid]&=~kmap->btnid;
-    i_evdev.playerv[0]&=~kmap->btnid;
+    i_evdev.player&=~kmap->btnid;
   }
 }
 
 /* Report a state to the game.
  */
 
-int sh_in(int plrid) {
-  if ((plrid<0)||(plrid>PLAYER_LIMIT)) return 0;
-  return i_evdev.playerv[plrid];
+int sh_in() {
+  return i_evdev.player;
 }

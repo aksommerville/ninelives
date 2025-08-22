@@ -145,7 +145,6 @@ void io_input_set_key(int keycode,int value) {
 /* Get state of a virtual device.
  */
 
-int sh_in(int plrid) {
-  if ((plrid<0)||(plrid>PLAYER_LIMIT)) return 0;
-  return i_dummy.playerv[plrid];
+int sh_in() {
+  return i_dummy.playerv[0];
 }
