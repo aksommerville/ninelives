@@ -55,13 +55,9 @@ void shm_update(double elapsed) {
     if (sprite->type->render) {
       sprite->type->render(sprite);
     } else {
-      //int dstx=(int)((sprite->x)*TILESIZE+0.5)-(TILESIZE>>1);
-      //int dsty=(int)((sprite->y)*TILESIZE+0.5)-(TILESIZE>>1);
-      int dstx=sprite->x-(TILESIZE>>1);
-      int dsty=sprite->y-(TILESIZE>>1);
       int srcx=(sprite->tileid&0x0f)*TILESIZE;
       int srcy=(sprite->tileid>>4)*TILESIZE;
-      r1b_img32_blit_img1(&g.fb,&g.graphics,dstx,dsty,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
+      r1b_img32_blit_img1(&g.fb,&g.graphics,sprite->x,sprite->y,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
     }
   }
   sh_fb(g.fb.v,FBW,FBH);

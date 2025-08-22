@@ -145,8 +145,10 @@ static int load_map_bin(const uint8_t *v,int c) {
           
         // HERO becomes EMPTY after we note the position.
         case TILE_HERO: {
-            struct sprite *sprite=sprite_spawn(&sprite_type_hero,col*TILESIZE+(TILESIZE>>1),row*TILESIZE+(TILESIZE>>1));
+            struct sprite *sprite=sprite_spawn(&sprite_type_hero,col*TILESIZE,row*TILESIZE);
             if (!sprite) return -1;
+            //XXX TEMP: Give me a corpse to play with.
+            sprite_spawn(&sprite_type_corpse,(col-2)*TILESIZE,row*TILESIZE);
             goto _EMPTY_;
           }
         

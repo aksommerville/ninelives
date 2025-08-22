@@ -10,6 +10,8 @@ struct sprite *sprite_spawn(const struct sprite_type *type,int x,int y) {
   sprite->type=type;
   sprite->x=x;
   sprite->y=y;
+  sprite->w=TILESIZE;
+  sprite->h=TILESIZE;
   if (type->init) type->init(sprite);
   return sprite;
 }

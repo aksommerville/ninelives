@@ -6,11 +6,14 @@ Entry for js13k 2025, theme "BLACK CAT".
 
 ## TODO
 
-- [ ] Hero sprite: Spawn, motion, collisions, jump.
+- [x] Rephrase sprite position as ints (x,y,w,h). They're mostly going to be the same size, and recording the center position is i think more trouble than it's worth.
+- [x] Hero sprite: Spawn, motion, collisions, jump.
+- [ ] Proper jumping.
+- [ ] Flying.
 - [ ] Spikes.
 - [ ] Laser.
 - [ ] Lay eggs.
-- [ ] Use corpses as platforms.
+- [x] Use corpses as platforms.
 - [ ] Exit map.
 - [ ] With the core mechanics above implemented, make the call on removing text and hello.
 - [ ] Decorative mouse at start of each map.
@@ -19,6 +22,8 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [ ] Game over. Win only; if you die, just the map resets.
 - [ ] Output video sizing is imperfect. Visible especially at 1x. (xegl). Update Shovel if we fix it.
 - [ ] Remove AUX1-to-quit before release, at least for web.
+- [ ] Eliminate multiplayer input, definitely don't need it.
+- [ ] Eliminate persistence if we're not keeping a high score. Are we?
 
 ## Notes
 

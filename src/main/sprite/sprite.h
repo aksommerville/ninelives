@@ -13,10 +13,11 @@ struct sprite_type;
 
 struct sprite {
   const struct sprite_type *type;
-  int x,y; // world pixels (same as framebuffer pixels)
+  int x,y,w,h; // world pixels (same as framebuffer pixels)
   uint8_t tileid,xform;
   uint32_t xbgr;
   int defunct;
+  int solid;
   int iv[SPRITE_IV_SIZE];
   double fv[SPRITE_FV_SIZE];
 };
@@ -31,5 +32,6 @@ struct sprite_type {
 struct sprite *sprite_spawn(const struct sprite_type *type,int x,int y);
 
 extern const struct sprite_type sprite_type_hero;
+extern const struct sprite_type sprite_type_corpse;
 
 #endif
