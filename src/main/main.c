@@ -13,7 +13,8 @@ void shm_quit(int status) {
 
 int shm_init() {
   if (render_init()<0) return -1;
-  sh_ms("\x02\x01",2); // 01=nine_lives, 02=get_over_here, 03=caught_the_mouse
+  if (load_map(1)<0) return -1;
+  sh_ms("\x02\x02",2); // 01=nine_lives, 02=get_over_here, 03=caught_the_mouse
   return 0;
 }
 

@@ -82,7 +82,7 @@ static int genioc_init(int argc,char **argv) {
       .w=0,
       .h=0,
       .fbw=160,
-      .fbh=90,
+      .fbh=88,
       .fullscreen=0,
       .title="Nine Lives",
       .iconrgba=0,

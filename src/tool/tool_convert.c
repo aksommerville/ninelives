@@ -111,6 +111,7 @@ static int tool_format_from_suffix(const char *path) {
   CK(".png",PNG)
   CK(".c",C)
   CK(".mid",MIDI)
+  CK(".map",MAPTEXT)
   #undef CK
   
   // rawimg does its own thing.
@@ -140,7 +141,7 @@ static int tool_guess_output_format(int srcfmt,const char *path) {
   if (fmt!=TOOL_FMT_UNKNOWN) return fmt;
   // Is there a default expected output format per input format?
   switch (srcfmt) {
-    // ...hmm, no. Maybe we should default to C? I'm thinking embed-in-executable will be the only means of data delivery.
+    case TOOL_FMT_MAPTEXT: return TOOL_FMT_MAPBIN;
   }
   return TOOL_FMT_UNKNOWN;
 }
@@ -174,6 +175,7 @@ int tool_convert(struct sr_encoder *dst,const void *src,int srcc,const char *dst
         case TOOL_FMT_PNG: return tool_convert_c_png(dst,src,srcc,srcpath,dstpath);
         case TOOL_FMT_C: return sr_encode_raw(dst,src,srcc);
         case TOOL_FMT_MIDI: return tool_convert_c_midi(dst,src,srcc,srcpath,dstpath);
+        case TOOL_FMT_MAPTEXT: return tool_convert_c_maptext(dst,src,srcc,srcpath,dstpath);
         default: return tool_convert_c_any(dst,src,srcc,srcpath,dstpath);
       } break;
       
@@ -191,6 +193,10 @@ int tool_convert(struct sr_encoder *dst,const void *src,int srcc,const char *dst
       
     case TOOL_FMT_SYNMIN: switch (srcfmt) {
         case TOOL_FMT_MIDI: return tool_convert_synmin_midi(dst,src,srcc,srcpath);
+      } break;
+      
+    case TOOL_FMT_MAPBIN: switch (srcfmt) {
+        case TOOL_FMT_MAPTEXT: return tool_convert_mapbin_maptext(dst,src,srcc,srcpath);
       } break;
       
     default: {
