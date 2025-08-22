@@ -59,17 +59,18 @@ static int load_map_bin(const uint8_t *v,int c) {
  _done_tiles_:;
   
   // Reset sprites and such.
-  //TODO
+  g.spritec=0;
+  //TODO Reset other map state.
  
   // Render bgbits, joining neighbors and such on the fly.
   // We'll also generate sprites in this pass.
   const uint32_t bgcolor=0xffe0b020;
   const uint8_t *srcrow=g.lmap+COLC+3;
-  int yi=ROWC;
-  for (dsty=0;yi-->0;dsty+=TILESIZE,srcrow+=COLC+2) {
+  int row=0;
+  for (dsty=0;row<ROWC;row++,dsty+=TILESIZE,srcrow+=COLC+2) {
     const uint8_t *srcp=srcrow;
-    int xi=COLC;
-    for (dstx=0;xi-->0;dstx+=TILESIZE,srcp++) {
+    int col=0;
+    for (dstx=0;col<COLC;col++,dstx+=TILESIZE,srcp++) {
       switch (*srcp) {
       
         // EMPTY is a flat color, not even a tile.
@@ -144,7 +145,8 @@ static int load_map_bin(const uint8_t *v,int c) {
           
         // HERO becomes EMPTY after we note the position.
         case TILE_HERO: {
-            //TODO sprite
+            struct sprite *sprite=sprite_spawn(&sprite_type_hero,col*TILESIZE+(TILESIZE>>1),row*TILESIZE+(TILESIZE>>1));
+            if (!sprite) return -1;
             goto _EMPTY_;
           }
         

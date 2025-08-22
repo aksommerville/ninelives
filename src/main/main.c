@@ -22,14 +22,48 @@ int shm_init() {
  */
 
 void shm_update(double elapsed) {
+  int i;
+  struct sprite *sprite;
+
+  /* Acquire input and react to global inputs.
+   */
+  g.pvinput=g.input;
+  g.input=sh_in(0);
+  if (g.input!=g.pvinput) {
+    if ((g.input&SH_BTN_AUX1)&&!(g.pvinput&SH_BTN_AUX1)) { sh_term(0); return; }
+  }
+
+  /* Update model state.
+   */
+  for (sprite=g.spritev,i=g.spritec;i-->0;sprite++) {
+    if (sprite->type->update) sprite->type->update(sprite,elapsed);
+  }
   
+  /* Reap defunct sprites.
+   */
+  for (i=g.spritec,sprite=g.spritev+g.spritec-1;i-->0;sprite--) {
+    if (sprite->defunct) {
+      g.spritec--;
+      memmove(sprite,sprite+1,sizeof(struct sprite)*(g.spritec-i));
+    }
+  }
+  
+  /* Render.
+   */
   memcpy(g.fb.v,g.bgbits.v,FBW*FBH*4);
-  
-  //draw_string(&g.fb,1,1,"The quick brown fox jumps",-1,0xffffffff);
-  //draw_string(&g.fb,1,9,"over the lazy dog.",-1,0xffffffff);
-  
-  //r1b_img32_blit_img1(&g.fb,&g.graphics,80,50,0,40,8,8,0,0xff000000,0);
-  
+  for (sprite=g.spritev,i=g.spritec;i-->0;sprite++) {
+    if (sprite->type->render) {
+      sprite->type->render(sprite);
+    } else {
+      //int dstx=(int)((sprite->x)*TILESIZE+0.5)-(TILESIZE>>1);
+      //int dsty=(int)((sprite->y)*TILESIZE+0.5)-(TILESIZE>>1);
+      int dstx=sprite->x-(TILESIZE>>1);
+      int dsty=sprite->y-(TILESIZE>>1);
+      int srcx=(sprite->tileid&0x0f)*TILESIZE;
+      int srcy=(sprite->tileid>>4)*TILESIZE;
+      r1b_img32_blit_img1(&g.fb,&g.graphics,dstx,dsty,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
+    }
+  }
   sh_fb(g.fb.v,FBW,FBH);
 }
 
@@ -43,5 +77,23 @@ void *memset(void *s, int n, long c) {
   unsigned char *p=s;
   for (;c-->0;p++) *p=n;
   return s;
+}
+void *memcpy(void *dst,const void *src,long c) {
+  uint8_t *dstp=dst;
+  const uint8_t *srcp=src;
+  for (;c-->0;dstp++,srcp++) *dstp=*srcp;
+  return dst;
+}
+void *memmove(void *dst,const void *src,long c) {
+  if (dst<src) {
+    uint8_t *dstp=dst;
+    const uint8_t *srcp=src;
+    for (;c-->0;dstp++,srcp++) *dstp=*srcp;
+  } else {
+    uint8_t *dstp=dst+c-1;
+    const uint8_t *srcp=src+c-1;
+    for (;c-->0;dstp--,srcp--) *dstp=*srcp;
+  }
+  return dst;
 }
 #endif

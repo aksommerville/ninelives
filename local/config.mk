@@ -3,7 +3,7 @@
 # Modify to suit this particular build host.
 
 # TARGETS: Which hosts do we build for? web linux macos mswin generic, or make one up and define it below.
-TARGETS:=web linux generic
+TARGETS:=web linux
 
 # NATIVE_TARGET: The one involved in 'make run', possibly other privileged roles.
 NATIVE_TARGET:=linux
