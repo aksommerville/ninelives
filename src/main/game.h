@@ -38,14 +38,6 @@ extern struct g {
 
 int render_init();
 
-/* (dstx,dsty) is the top-left corner of the first glyph.
- * Single row only.
- * Returns next X position.
- * Glyphs are all 7 pixels high, though technically they could be 8.
- * Codepoints outside G0 are quietly skipped.
- */
-int draw_string(struct r1b_img32 *dst,int dstx,int dsty,const char *src,int srcc,int xbgr);
-
 int load_map(int id);
 
 // [noteida 0..63,noteidz 0..63,level 0..31,duration 16ms]

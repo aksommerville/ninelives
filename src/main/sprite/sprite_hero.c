@@ -26,7 +26,7 @@ static const int flyv[]={
 static const int flyc=sizeof(flyv)/sizeof(flyv[0]);
 
 static void _hero_init(struct sprite *sprite) {
-  sprite->tileid=0x50;
+  sprite->tileid=0x10;
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
@@ -266,7 +266,7 @@ static void _hero_render(struct sprite *sprite) {
   int srcy=(tileid>>4)*TILESIZE;
   r1b_img32_blit_img1(&g.fb,&g.graphics,dstx,dsty,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
   if (WINGS) {
-    uint8_t wtileid=0x61;
+    uint8_t wtileid=0x21;
          if (FLAPCLOCK>0.100) wtileid=0x63;
     else if (FLAPCLOCK>0.000) wtileid=0x62;
     srcx=(wtileid&0x0f)*TILESIZE;
@@ -277,7 +277,7 @@ static void _hero_render(struct sprite *sprite) {
     r1b_img32_blit_img1(&g.fb,&g.graphics,wdstx,wdsty,srcx,srcy,TILESIZE,TILESIZE,0,0xffffffff,sprite->xform);
   }
   if (FLAMING) {
-    uint8_t ftileid=0x57; // TODO Flame probably needs some animation.
+    uint8_t ftileid=0x17; // TODO Flame probably needs some animation.
     srcx=(ftileid&0x0f)*TILESIZE;
     srcy=(ftileid>>4)*TILESIZE;
     int fdstx=dstx;

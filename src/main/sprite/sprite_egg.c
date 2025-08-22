@@ -5,7 +5,7 @@
 #include "main/game.h"
 
 static void _egg_init(struct sprite *sprite) {
-  sprite->tileid=0x60;
+  sprite->tileid=0x20;
   sprite->xbgr=0xffffffff;
 }
 

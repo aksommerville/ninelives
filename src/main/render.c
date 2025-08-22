@@ -61,29 +61,3 @@ int render_init() {
   
   return 0;
 }
-
-/* Single line text.
- */
- 
-int draw_string(struct r1b_img32 *dst,int dstx,int dsty,const char *src,int srcc,int bgrx) {
-  if (!src) return 0;
-  if (srcc<0) { srcc=0; while (src[srcc]) srcc++; }
-  for (;srcc-->0;src++) {
-    int glyphid=(*src)-0x20;
-    if (glyphid<0) continue;
-    if (!glyphid) { // Space is special: Don't render anything, but do advance by a constant amount.
-      dstx+=SPACEW;
-      continue;
-    }
-    if (glyphid>=0x40) glyphid-=0x20; // Lowercase to uppercase (and incidentally mangle some punctuation).
-    if (glyphid>=0x40) continue;
-    if (dst) {
-      int srcx=(glyphid&15)*GLYPHW;
-      int srcy=(glyphid>>4)*GLYPHH;
-      r1b_img32_blit_img1(dst,&g.graphics,dstx,dsty,srcx,srcy,width_by_glyph[glyphid],GLYPHH,0,bgrx,0);
-    }
-    dstx+=width_by_glyph[glyphid];
-    dstx++;
-  }
-  return dstx;
-}

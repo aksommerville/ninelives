@@ -87,14 +87,14 @@ static int load_map_bin(const uint8_t *v,int c) {
               r1b_img32_blit_img1( \
                 &g.bgbits,&g.graphics, \
                 dstx+dx*(TILESIZE>>1),dsty+dy*(TILESIZE>>1), \
-                sx*(TILESIZE>>1),32+sy*(TILESIZE>>1), \
+                sx*(TILESIZE>>1),sy*(TILESIZE>>1), \
                 TILESIZE>>1,TILESIZE>>1, \
                 0xff186020,0xff38c040,xform \
               ); \
               r1b_img32_blit_img1( \
                 &g.bgbits,&g.graphics, \
                 dstx+dx*(TILESIZE>>1),dsty+dy*(TILESIZE>>1), \
-                (3+sx)*(TILESIZE>>1),32+sy*(TILESIZE>>1), \
+                (3+sx)*(TILESIZE>>1),sy*(TILESIZE>>1), \
                 TILESIZE>>1,TILESIZE>>1, \
                 0,0xff000000,xform \
               );
@@ -141,7 +141,7 @@ static int load_map_bin(const uint8_t *v,int c) {
               fprintf(stderr,"Spike must have cardinal WALL and EMPTY neighbors opposite each other.\n");
               return -1;
             }
-            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,24,32,TILESIZE,TILESIZE,bgcolor,0xfffff8f0,xform);
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,24,0,TILESIZE,TILESIZE,bgcolor,0xfffff8f0,xform);
           } break;
           
         // HERO becomes EMPTY after we note the position.
@@ -157,12 +157,12 @@ static int load_map_bin(const uint8_t *v,int c) {
         // There must be another LASER on one of our axes; we'll point toward it.
         // Record the position for a sprite.
         case TILE_LASER: {
-            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty, 8,40,TILESIZE,TILESIZE,0xff00ffff,0xff008080,0); //TODO
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty, 8,8,TILESIZE,TILESIZE,0xff00ffff,0xff008080,0); //TODO
           } break;
         
         // DOOR: Simple tile.
         case TILE_DOOR: {
-            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,32,32,TILESIZE,TILESIZE,bgcolor,0xff203050,0);
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,32,0,TILESIZE,TILESIZE,bgcolor,0xff203050,0);
           } break;
       }
     }

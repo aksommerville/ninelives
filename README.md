@@ -15,7 +15,7 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Lay eggs.
 - [x] Use corpses as platforms.
 - [ ] Exit map.
-- [ ] With the core mechanics above implemented, make the call on removing text and hello.
+- [x] With the core mechanics above implemented, make the call on removing text and hello. ...definitely need to remove things.
 - [ ] Decorative mouse at start of each map.
 - [ ] Gore under the corpse. If impaled, have it drip blood onto the floor.
 - [ ] Show remaining eggs at the bottom of the screen.

@@ -38,9 +38,9 @@ void sha_update(int framec) {
           int srcc=0;
           switch (msg[1]) {
             case 0: break; // Explicitly empty.
-            case 1: src=nine_lives; srcc=nine_lives_len; break;
+            //case 1: src=nine_lives; srcc=nine_lives_len; break;
             case 2: src=get_over_here; srcc=get_over_here_len; break;
-            case 3: src=caught_the_mouse; srcc=caught_the_mouse_len; break;
+            //case 3: src=caught_the_mouse; srcc=caught_the_mouse_len; break;
           }
           synmin_song(src,srcc,0,1);
         } break;

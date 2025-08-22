@@ -5,7 +5,7 @@
 #include "main/game.h"
 
 static void _corpse_init(struct sprite *sprite) {
-  sprite->tileid=0x55;
+  sprite->tileid=0x15;
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
