@@ -27,6 +27,9 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [ ] Remove AUX1-to-quit before release, at least for web.
 - [x] Eliminate multiplayer input, definitely don't need it.
 - [ ] Eliminate persistence if we're not keeping a high score. Are we? No, no space for it.
+- [ ] Face the door at init and hatch.
+- [ ] 13 sensible maps.
+- [ ] Put maps in order.
 
 ## Notes
 
