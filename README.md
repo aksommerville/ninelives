@@ -10,11 +10,13 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Hero sprite: Spawn, motion, collisions, jump.
 - [x] Proper jumping.
 - [x] Flying.
-- [ ] Spikes.
+- [x] Spikes.
 - [ ] Laser.
 - [x] Lay eggs.
 - [x] Use corpses as platforms.
 - [ ] Exit map.
+- [ ] Restart map when all dead.
+- [ ] Force valid position after hatching.
 - [x] With the core mechanics above implemented, make the call on removing text and hello. ...definitely need to remove things.
 - [ ] Decorative mouse at start of each map.
 - [ ] Gore under the corpse. If impaled, have it drip blood onto the floor.

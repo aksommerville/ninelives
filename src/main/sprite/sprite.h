@@ -35,4 +35,9 @@ extern const struct sprite_type sprite_type_hero;
 extern const struct sprite_type sprite_type_corpse;
 extern const struct sprite_type sprite_type_egg;
 
+/* Create a corpse sprite with (x,y) at its center, then set its xform, then call this.
+ * (dx,dy) are a cardinal unit vector describing the edge of the spike tile we're at.
+ */
+void sprite_corpse_setup(struct sprite *sprite,int dx,int dy);
+
 #endif

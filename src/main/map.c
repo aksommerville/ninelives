@@ -148,8 +148,6 @@ static int load_map_bin(const uint8_t *v,int c) {
         case TILE_HERO: {
             struct sprite *sprite=sprite_spawn(&sprite_type_hero,col*TILESIZE,row*TILESIZE);
             if (!sprite) return -1;
-            //XXX TEMP: Give me a corpse to play with.
-            sprite_spawn(&sprite_type_corpse,(col-2)*TILESIZE,row*TILESIZE);
             goto _EMPTY_;
           }
         

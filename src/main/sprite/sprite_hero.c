@@ -10,6 +10,7 @@
 #define ANIMCLOCK sprite->fv[0]
 #define FLAPCLOCK sprite->fv[1]
 #define EGGCLOCK sprite->fv[2]
+#define HATCHCLOCK sprite->fv[3]
 
 /* Definition of the jump curve.
  * This may be aborted anywhere.
@@ -30,7 +31,7 @@ static void _hero_init(struct sprite *sprite) {
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
-  WINGS=1; // TODO Decide whether we have flight and flame power.
+  //WINGS=1; // TODO Decide whether we have flight and flame power.
   //FLAMETHROWABLE=1; // ''
 }
 
@@ -144,10 +145,69 @@ static int hero_egg_ok(struct sprite *sprite) {
   return 0;
 }
 
+/* Take damage due to spikes.
+ */
+ 
+static void hero_hurt(struct sprite *sprite,int col,int row) {
+  int dx=0,dy=0;
+  const uint8_t *srcp=g.lmap+(row+1)*(COLC+2)+1+col;
+  if ((srcp[-COLC-2]==TILE_EMPTY)&&(srcp[COLC+2]==TILE_WALL)) dy=-1;
+  else if ((srcp[-1]==TILE_EMPTY)&&(srcp[1]==TILE_WALL)) dx=-1;
+  else if ((srcp[1]==TILE_EMPTY)&&(srcp[-1]==TILE_WALL)) dx=1;
+  else if ((srcp[COLC+2]==TILE_EMPTY)&&(srcp[-COLC-2]==TILE_WALL)) dy=1;
+  int cx=dx?(col*TILESIZE+(TILESIZE>>1)+dx*(TILESIZE>>1)):(sprite->x+(sprite->w>>1));
+  int cy=dy?(row*TILESIZE+(TILESIZE>>1)+dy*(TILESIZE>>1)):(sprite->y+(sprite->h>>1));
+  struct sprite *corpse=sprite_spawn(&sprite_type_corpse,cx,cy);
+  if (corpse) {
+    corpse->xform=sprite->xform&R1B_XFORM_XREV;
+    sprite_corpse_setup(corpse,dx,dy);
+  }
+  sprite->defunct=1;
+  
+  /* Find the highest-priority egg and hatch it.
+   * If there isn't one, schedule level failure.
+   */
+  struct sprite *egg=0;
+  struct sprite *q=g.spritev;
+  int i=g.spritec;
+  for (;i-->0;q++) {
+    if (q->defunct) continue;
+    if (q->type!=&sprite_type_egg) continue;
+    if (!egg||(q->iv[0]>egg->iv[0])) egg=q;
+  }
+  if (!egg) {
+    fprintf(stderr,"*** LAST CAT DEAD. RESTART LEVEL. %s:%d ***\n",__FILE__,__LINE__);
+  } else {
+    egg->defunct=1; // TODO Animate hatching.
+    struct sprite *kitten=sprite_spawn(&sprite_type_hero,egg->x,egg->y);
+    if (kitten) {
+      kitten->fv[3]=0.500; // HATCHCLOCK
+      //TODO Force a valid position. Eggs can be too close to a wall.
+    }
+  }
+}
+
+/* Reach the door: Win level.
+ */
+ 
+static void hero_win(struct sprite *sprite,int col,int row) {
+  fprintf(stderr,"%s\n",__func__);
+  sprite->defunct=1;
+  //TODO Animate door?
+  //TODO Schedule next level.
+}
+
 /* Update.
  */
 
 static void _hero_update(struct sprite *sprite,double elapsed) {
+
+  /* If the hatch clock is still ticking, tick it and nothing else.
+   */
+  if (HATCHCLOCK>0.0) {
+    HATCHCLOCK-=elapsed;
+    return;
+  }
 
   /* Lay eggs and breathe fire, as cats do.
    */
@@ -244,9 +304,18 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
     ANIMFRAME=0;
     ANIMCLOCK=0.0;
   }
-
-  //TODO Take damage.
-  //TODO Win level.
+  
+  /* Hazards and victory.
+   * Both are driven by the quantized position, center of sprite.
+   */
+  int col=(sprite->x+(sprite->w>>1))/TILESIZE;
+  int row=(sprite->y+(sprite->h>>1))/TILESIZE;
+  if ((col>=0)&&(col<COLC)&&(row>=0)&&(row<ROWC)) {
+    switch (g.lmap[(row+1)*(COLC+2)+1+col]) {
+      case TILE_SPIKES: hero_hurt(sprite,col,row); break;
+      case TILE_DOOR: hero_win(sprite,col,row); break;
+    }
+  }
 }
 
 /* Render.
