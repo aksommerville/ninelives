@@ -11,22 +11,22 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Proper jumping.
 - [x] Flying.
 - [x] Spikes.
-- [ ] Laser.
+- [ ] Laser. Maybe nix this, we're running out of space.
 - [x] Lay eggs.
 - [x] Use corpses as platforms.
-- [ ] Exit map.
-- [ ] Restart map when all dead.
+- [x] Exit map.
+- [x] Restart map when all dead.
 - [ ] Force valid position after hatching.
 - [x] With the core mechanics above implemented, make the call on removing text and hello. ...definitely need to remove things.
 - [ ] Decorative mouse at start of each map.
-- [ ] Gore under the corpse. If impaled, have it drip blood onto the floor.
-- [ ] Show remaining eggs at the bottom of the screen.
-- [ ] Breathing fire.
+- [x] Gore under the corpse. If impaled, have it drip blood onto the floor.
+- [x] Show remaining eggs at the bottom of the screen.
+- [ ] Breathing fire - burn things.
 - [ ] Game over. Win only; if you die, just the map resets.
 - [ ] Output video sizing is imperfect. Visible especially at 1x. (xegl). Update Shovel if we fix it.
 - [ ] Remove AUX1-to-quit before release, at least for web.
 - [x] Eliminate multiplayer input, definitely don't need it.
-- [ ] Eliminate persistence if we're not keeping a high score. Are we?
+- [ ] Eliminate persistence if we're not keeping a high score. Are we? No, no space for it.
 
 ## Notes
 

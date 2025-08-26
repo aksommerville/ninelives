@@ -32,6 +32,24 @@ void shm_update(double elapsed) {
   if (g.input!=g.pvinput) {
     if ((g.input&SH_BTN_AUX1)&&!(g.pvinput&SH_BTN_AUX1)) { sh_term(0); return; }
   }
+  
+  /* Advance termination clock and react to its expiry.
+   */
+  if (g.term<0.0) {
+    if ((g.term+=elapsed)>=0.0) {
+      g.term=0.0;
+      load_map(g.mapid);
+    }
+  } else if (g.term>0.0) {
+    if ((g.term-=elapsed)<=0.0) {
+      g.term=0.0;
+      if (load_map(g.mapid+1)<0) {
+        fprintf(stderr,"**** WIN GAME **** %s:%d\n",__FILE__,__LINE__);
+        // For now, let's just start over.
+        load_map(1);
+      }
+    }
+  }
 
   /* Update model state.
    */
@@ -59,6 +77,10 @@ void shm_update(double elapsed) {
       int srcy=(sprite->tileid>>4)*TILESIZE;
       r1b_img32_blit_img1(&g.fb,&g.graphics,sprite->x,sprite->y,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
     }
+  }
+  int dstx=1;
+  for (i=g.eggc;i-->0;dstx+=5) {
+    r1b_img32_blit_img1(&g.fb,&g.graphics,dstx,FBH-6,2,19,4,5,0,0xffffffff,0);
   }
   sh_fb(g.fb.v,FBW,FBH);
 }

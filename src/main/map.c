@@ -1,7 +1,8 @@
 #include "game.h"
 
 #define FOR_EACH_MAP \
-  _(m1)
+  _(m1) \
+  _(m2)
   
 #define _(tag) \
   extern const unsigned char tag[]; \
@@ -170,7 +171,9 @@ static int load_map_bin(const uint8_t *v,int c) {
 }
 
 int load_map(int id) {
+  //fprintf(stderr,"%s %d\n",__func__,id);
   if (id<1) return -1;
+  g.mapid=id;
   #define _(tag) if (!--id) return load_map_bin(tag,tag##_len);
   FOR_EACH_MAP
   #undef _

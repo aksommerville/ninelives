@@ -31,8 +31,6 @@ static void _hero_init(struct sprite *sprite) {
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
-  //WINGS=1; // TODO Decide whether we have flight and flame power.
-  //FLAMETHROWABLE=1; // ''
 }
 
 /* Physics tests.
@@ -176,13 +174,14 @@ static void hero_hurt(struct sprite *sprite,int col,int row) {
     if (!egg||(q->iv[0]>egg->iv[0])) egg=q;
   }
   if (!egg) {
-    fprintf(stderr,"*** LAST CAT DEAD. RESTART LEVEL. %s:%d ***\n",__FILE__,__LINE__);
+    g.term=-1.000;
   } else {
     egg->defunct=1; // TODO Animate hatching.
     struct sprite *kitten=sprite_spawn(&sprite_type_hero,egg->x,egg->y);
     if (kitten) {
+      kitten->iv[2]=(egg->iv[0]<=4); // WINGS
+      kitten->iv[4]=(egg->iv[0]==1); // FLAMETHROWABLE
       kitten->fv[3]=0.500; // HATCHCLOCK
-      //TODO Force a valid position. Eggs can be too close to a wall.
     }
   }
 }
@@ -191,10 +190,9 @@ static void hero_hurt(struct sprite *sprite,int col,int row) {
  */
  
 static void hero_win(struct sprite *sprite,int col,int row) {
-  fprintf(stderr,"%s\n",__func__);
   sprite->defunct=1;
   //TODO Animate door?
-  //TODO Schedule next level.
+  g.term=1.000;
 }
 
 /* Update.

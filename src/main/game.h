@@ -30,10 +30,12 @@ extern struct g {
    * Values are TILE_*.
    */
   uint8_t lmap[(COLC+2)*(ROWC+2)];
+  int mapid;
 
   struct sprite spritev[SPRITE_LIMIT];
   int spritec;
   int eggc; // Starts at 8, how many remain to be laid. Eggs in the field don't count.
+  double term; // <0 to fail, >0 to pass. Counts toward zero before committing.
 } g;
 
 int render_init();
