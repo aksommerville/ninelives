@@ -30,7 +30,7 @@ static void _hero_init(struct sprite *sprite) {
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
-  //WINGS=1; // TODO Decide whether we have flight and flame power.
+  WINGS=1; // TODO Decide whether we have flight and flame power.
   //FLAMETHROWABLE=1; // ''
 }
 
@@ -267,8 +267,8 @@ static void _hero_render(struct sprite *sprite) {
   r1b_img32_blit_img1(&g.fb,&g.graphics,dstx,dsty,srcx,srcy,TILESIZE,TILESIZE,0,sprite->xbgr,sprite->xform);
   if (WINGS) {
     uint8_t wtileid=0x21;
-         if (FLAPCLOCK>0.100) wtileid=0x63;
-    else if (FLAPCLOCK>0.000) wtileid=0x62;
+         if (FLAPCLOCK>0.100) wtileid=0x23;
+    else if (FLAPCLOCK>0.000) wtileid=0x22;
     srcx=(wtileid&0x0f)*TILESIZE;
     srcy=(wtileid>>4)*TILESIZE;
     int wdstx=dstx;
