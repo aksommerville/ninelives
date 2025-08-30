@@ -94,19 +94,19 @@ const
   td = new TextDecoder("utf8"),
   te = new TextEncoder("utf8"),
   km = { // Keyboard map: { [keyCode]: btnid }
-    ArrowLeft:  0x01,
-    ArrowRight: 0x02,
-    ArrowUp:    0x04,
-    ArrowDown:  0x08,
-    Enter:      0x40,
-    KeyA:       0x01,
-    KeyD:       0x02,
-    KeyW:       0x04,
-    KeyS:       0x08,
-    Space:      0x10,
-    KeyE:       0x20,
-    KeyX:       0x20,
-    KeyZ:       0x10,
+    ArrowLeft:  0x0001,
+    ArrowRight: 0x0002,
+    ArrowUp:    0x0004,
+    ArrowDown:  0x0008,
+    Enter:      0x1000,
+    KeyA:       0x0001,
+    KeyD:       0x0002,
+    KeyW:       0x0004,
+    KeyS:       0x0008,
+    Space:      0x0010,
+    KeyE:       0x0020,
+    KeyX:       0x0020,
+    KeyZ:       0x0010,
   };
 let wi, mem, rom, fb, fbw, fbh, trm, cvs, ctx, imd, pvt, actx, an, pau, inp=0;
 function zs(p) {
@@ -209,7 +209,7 @@ function gp() { // Poll gamepads. Assume Standard Mapping, and assign to players
     if (g) {
       b(0, 0x10); // south
       b(2, 0x20); // west
-      b(9, 0x40); // start
+      b(9, 0x1000); // start
       b(12, 0x04); // up
       b(13, 0x08); // down
       b(14, 0x01); // left
