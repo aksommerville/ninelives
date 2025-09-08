@@ -31,6 +31,7 @@ static void _hero_init(struct sprite *sprite) {
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
+  JUMPP=100;
 }
 
 /* Physics tests.
@@ -189,8 +190,10 @@ static void hero_hurt(struct sprite *sprite,int col,int row) {
     if (!egg||(q->iv[0]>egg->iv[0])) egg=q;
   }
   if (!egg) {
+    g.score.restartc++;
     g.term=-1.000;
   } else {
+    g.score.catc++;
     egg->defunct=1; // TODO Animate hatching.
     struct sprite *kitten=sprite_spawn(&sprite_type_hero,egg->x,egg->y);
     if (kitten) {
@@ -238,6 +241,7 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
       if (EGGCLOCK>=0.750) {
         struct sprite *egg=sprite_spawn(&sprite_type_egg,sprite->x+(sprite->w>>1)+((sprite->xform&R1B_XFORM_XREV)?-6:-2),sprite->y);
         if (egg) {
+          g.score.eggc++;
           SFX(layegg);
           EGGCLOCK=0.0;
           EGGED=1;

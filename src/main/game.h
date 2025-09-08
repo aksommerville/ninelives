@@ -36,6 +36,13 @@ extern struct g {
   int spritec;
   int eggc; // Starts at 8, how many remain to be laid. Eggs in the field don't count.
   double term; // <0 to fail, >0 to pass. Counts toward zero before committing.
+  int gameover;
+  struct score {
+    double playtime;
+    int eggc; // Eggs laid.
+    int catc; // Cats hatched, including the initial one.
+    int restartc; // How many times did you die with no eggs?
+  } score;
 } g;
 
 int render_init();

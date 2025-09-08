@@ -65,7 +65,7 @@ static int load_map_bin(const uint8_t *v,int c) {
   // Reset sprites and such.
   g.spritec=0;
   g.eggc=8;
-  //TODO Reset other map state.
+  g.score.catc++;
  
   // Render bgbits, joining neighbors and such on the fly.
   // We'll also generate sprites in this pass.
