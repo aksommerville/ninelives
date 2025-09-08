@@ -143,6 +143,21 @@ static int hero_egg_ok(struct sprite *sprite) {
   return 0;
 }
 
+/* Force a new cat into a legal position.
+ * Eggs can go a little into the wall. Cats shouldn't.
+ * Basically, whichever cell my center is in, force the sprite's edges into that box.
+ */
+ 
+static void hero_force_initial_position(struct sprite *sprite) {
+  int col=(sprite->x+(sprite->w>>1))/TILESIZE;
+  int row=(sprite->y+(sprite->h>>1))/TILESIZE;
+  int limit;
+  limit=col*TILESIZE; if (sprite->x<limit) sprite->x=limit;
+  limit+=TILESIZE; if (sprite->x+sprite->w>limit) sprite->x=limit-sprite->w;
+  limit=row*TILESIZE; if (sprite->y<limit) sprite->y=limit;
+  limit+=TILESIZE; if (sprite->y+sprite->h>limit) sprite->y=limit-sprite->h;
+}
+
 /* Take damage due to spikes.
  */
  
@@ -182,6 +197,7 @@ static void hero_hurt(struct sprite *sprite,int col,int row) {
       kitten->iv[2]=(egg->iv[0]<=4); // WINGS
       kitten->iv[4]=(egg->iv[0]==1); // FLAMETHROWABLE
       kitten->fv[3]=0.500; // HATCHCLOCK
+      hero_force_initial_position(kitten);
     }
   }
 }
@@ -220,7 +236,7 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
     if ((g.input&SH_BTN_WEST)&&hero_egg_ok(sprite)) {
       EGGCLOCK+=elapsed;
       if (EGGCLOCK>=0.750) {
-        struct sprite *egg=sprite_spawn(&sprite_type_egg,sprite->x+((sprite->xform&R1B_XFORM_XREV)?-4:4),sprite->y);
+        struct sprite *egg=sprite_spawn(&sprite_type_egg,sprite->x+(sprite->w>>1)+((sprite->xform&R1B_XFORM_XREV)?-6:-2),sprite->y);
         if (egg) {
           SFX(layegg);
           EGGCLOCK=0.0;

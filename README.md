@@ -16,7 +16,7 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Use corpses as platforms.
 - [x] Exit map.
 - [x] Restart map when all dead.
-- [ ] Force valid position after hatching.
+- [x] Force valid position after hatching.
 - [x] With the core mechanics above implemented, make the call on removing text and hello. ...definitely need to remove things.
 - [ ] Decorative mouse at start of each map.
 - [x] Gore under the corpse. If impaled, have it drip blood onto the floor.

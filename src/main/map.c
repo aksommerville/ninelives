@@ -1,10 +1,10 @@
 #include "game.h"
 
 #define FOR_EACH_MAP \
+  _(m1) \
   _(m5) \
   _(m4) \
   _(m3) \
-  _(m1) \
   _(m2)
   
 #define _(tag) \
