@@ -105,6 +105,7 @@ const
     KeyS:       0x0008,
     Space:      0x0010,
     KeyE:       0x0020,
+    KeyR:       0x0040,
     KeyX:       0x0020,
     KeyZ:       0x0010,
   };
@@ -212,6 +213,7 @@ function gp() { // Poll gamepads. Assume Standard Mapping, and assign to players
     };
     if (g) {
       b(0, 0x10); // south
+      b(1, 0x40); // east
       b(2, 0x20); // west
       b(9, 0x1000); // start
       b(12, 0x04); // up

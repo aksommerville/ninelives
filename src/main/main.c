@@ -90,7 +90,8 @@ void shm_update(double elapsed) {
   g.pvinput=g.input;
   g.input=sh_in();
   if (g.input!=g.pvinput) {
-    if ((g.input&SH_BTN_AUX1)&&!(g.pvinput&SH_BTN_AUX1)) { sh_term(0); return; }
+    //if ((g.input&SH_BTN_AUX1)&&!(g.pvinput&SH_BTN_AUX1)) { sh_term(0); return; } // XXX Remove for final build.
+    if ((g.input&SH_BTN_EAST)&&!(g.pvinput&SH_BTN_EAST)) load_map(g.mapid);
   }
   
   /* If we're in the gameover modal, that's its own whole thing.

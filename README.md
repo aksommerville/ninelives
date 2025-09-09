@@ -12,12 +12,16 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Switchable gates.
 - [x] Breathing fire - burn things.
 - [ ] Output video sizing is imperfect. Visible especially at 1x. (xegl). Update Shovel if we fix it.
-- [ ] Remove AUX1-to-quit before release, at least for web.
+- [x] Remove AUX1-to-quit before release, at least for web.
 - [ ] Eliminate persistence if we're not keeping a high score. Are we? No, no space for it.
 - [x] Face the door at init and hatch.
 - [x] 13 sensible maps.
 - [ ] Put maps in order.
-- [ ] "reset level" key.
+- [x] "reset level" key.
+- [ ] Promo pics.
+- - js13k cover: 320x320 (<=50 kb)
+- - js13k hero: 800x500 (<=200 kb)
+- - itch cover: 630x500
 
 ## Notes
 
