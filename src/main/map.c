@@ -1,6 +1,8 @@
 #include "game.h"
 
 #define FOR_EACH_MAP \
+  _(m7) \
+  _(m6) \
   _(m2) \
   _(m1) \
   _(m3) \

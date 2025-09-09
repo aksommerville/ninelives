@@ -6,6 +6,8 @@ Entry for js13k 2025, theme "BLACK CAT".
 
 ## TODO
 
+- [x] Web: Keyboard stops working after a gamepad interaction.
+- - See `gp()` in index.html: We are polling every button once the gamepad connects. Ought to update player state only on _changes_.
 - [ ] Remove Laser.
 - [x] Switchable gates.
 - [x] Breathing fire - burn things.
