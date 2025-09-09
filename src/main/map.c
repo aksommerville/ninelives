@@ -1,11 +1,11 @@
 #include "game.h"
 
 #define FOR_EACH_MAP \
+  _(m2) \
   _(m1) \
-  _(m5) \
-  _(m4) \
   _(m3) \
-  _(m2)
+  _(m4) \
+  _(m5)
   
 #define _(tag) \
   extern const unsigned char tag[]; \
@@ -102,10 +102,12 @@ void render_bgbits(int initial) {
         // Each SPIKE tile must have one EMPTY cardinal neighbor opposite a WALL one.
         case TILE_SPIKES: {
             uint8_t xform;
-            if ((srcp[-COLC-2]==TILE_EMPTY)&&(srcp[COLC+2]==TILE_WALL)) xform=0; // up
-            else if ((srcp[-1]==TILE_EMPTY)&&(srcp[1]==TILE_WALL)) xform=R1B_XFORM_SWAP|R1B_XFORM_XREV; // left
-            else if ((srcp[1]==TILE_EMPTY)&&(srcp[-1]==TILE_WALL)) xform=R1B_XFORM_SWAP|R1B_XFORM_YREV; // right
-            else if ((srcp[COLC+2]==TILE_EMPTY)&&(srcp[-COLC-2]==TILE_WALL)) xform=R1B_XFORM_XREV|R1B_XFORM_YREV; // down
+            #define emptyish(p) ((srcp[p]==TILE_EMPTY)||(srcp[p]==TILE_GATE0)||(srcp[p]==TILE_GATE1))
+            if ((emptyish(-COLC-2))&&(srcp[COLC+2]==TILE_WALL)) xform=0; // up
+            else if ((emptyish(-1))&&(srcp[1]==TILE_WALL)) xform=R1B_XFORM_SWAP|R1B_XFORM_XREV; // left
+            else if ((emptyish(1))&&(srcp[-1]==TILE_WALL)) xform=R1B_XFORM_SWAP|R1B_XFORM_YREV; // right
+            else if ((emptyish(COLC+2))&&(srcp[-COLC-2]==TILE_WALL)) xform=R1B_XFORM_XREV|R1B_XFORM_YREV; // down
+            #undef emptyish
             else {
               fprintf(stderr,"Spike must have cardinal WALL and EMPTY neighbors opposite each other.\n");
               return;

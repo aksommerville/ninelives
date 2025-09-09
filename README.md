@@ -15,6 +15,7 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] Face the door at init and hatch.
 - [ ] 13 sensible maps.
 - [ ] Put maps in order.
+- [ ] "reset level" key.
 
 ## Notes
 

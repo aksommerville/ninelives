@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--
+  At first I thought it would be ok to edit maps in a text editor, but that's proving painful.
+-->
+<html><head>
+<style>
+#controls {
+  display: flex;
+  flex-direction: row;
+}
+canvas {
+  width: 32px;
+  height: 32px;
+}
+.inputRow {
+  display: flex;
+  flex-direction: row;
+}
+</style>
+<script>
+
+const tiledefs = [
+  [".,", "#8cf", "EMPTY"],
+  ["Xx", "#080", "WALL"],
+  ["Ss", "#ccc", "SPIKES"],
+  ["Ll", "#ff0", "LASER"],
+  ["Hh", "#000", "HERO"],
+  ["Dd", "#753", "DOOR"],
+  ["Ww", "#cef", "SWITCH"],
+  ["Gg", "#246", "GATE"],
+  ["Bb", "#321", "BURNABLE"],
+];
+
+const colc=20, rowc=11, tilesize=8;
+const v = new Uint8Array(colc * rowc);
+let painting=false, paintValue=0;
+
+function redraw1(x, y) {
+  const p = y * colc + x;
+  const canvas = document.querySelector(`canvas[p='${p}']`);
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const tiledef = tiledefs[v[p]];
+  if (tiledef) {
+    ctx.fillStyle = tiledef[1];
+  } else {
+    ctx.fillStyle = "#0f0";
+  }
+  ctx.fillRect(0, 0, tilesize, tilesize);
+}
+
+function redraw(x, y, w, h) {
+  for (; h-->0; y++) {
+    for (let xi=0; xi<w; xi++) {
+      redraw1(x + xi, y);
+    }
+  }
+}
+
+function decode(src) {
+  const expect = (colc * 2 + 1) * rowc;
+  if (src.length !== expect) throw new Error(`Expected ${expect} bytes, found ${src.length}`);
+  for (let dstp=0, srcp=0, yi=rowc; yi-->0; srcp++) {
+    for (let xi=colc; xi-->0; dstp++, srcp+=2) {
+      const token = src.substring(srcp, srcp+2);
+      const tileid = tiledefs.findIndex(td => td[0] === token);
+      if (tileid >= 0) {
+        v[dstp] = tileid;
+      } else {
+        throw new Error(`Unknown tile ${JSON.stringify(token)}`);
+      }
+    }
+  }
+}
+
+function encode() {
+  let dst = "";
+  for (let yi=rowc, srcp=0; yi-->0; dst+="\n") {
+    for (let xi=colc; xi-->0; srcp++) {
+      dst += tiledefs[v[srcp]][0];
+    }
+  }
+  return dst;
+}
+
+function onFileChanged(event) {
+  if (event.target.files.length !== 1) throw new Error(`Expected exactly one file.`);
+  const file = event.target.files[0];
+  file.text().then(src => {
+    decode(src);
+    redraw(0, 0, colc, rowc);
+  });
+}
+
+function onSave() {
+  const text = encode();
+  console.log(text);
+  document.getElementById("toast").innerText = "Written to console. Copy from there.";
+  window.setTimeout(() => {
+    document.getElementById("toast").innerText = "";
+  }, 2000);
+}
+
+function onMouseDown(event) {
+  if (event.button !== 0) return;
+  if (painting) return;
+  if (event.ctrlKey) {
+    paintValue = v[+event.target.getAttribute("p")];
+    document.getElementById(`palette${paintValue}`).click();
+  } else {
+    painting = true;
+    paintValue = +document.querySelector("#palette input:checked").value;
+    const p = +event.target.getAttribute("p");
+    v[p] = paintValue;
+    redraw1(p % colc, Math.floor(p / colc));
+  }
+}
+
+function onMouseUp(event) {
+  painting = false;
+}
+
+function onMouseEnter(event) {
+  if (!painting) return;
+  const p = +event.target.getAttribute("p");
+  v[p] = paintValue;
+  redraw1(p % colc, Math.floor(p / colc));
+}
+
+addEventListener("load", () => {
+  const table = document.getElementById("map");
+  for (let row=0, p=0; row<rowc; row++) {
+    const tr = document.createElement("TR");
+    table.appendChild(tr);
+    for (let col=0; col<colc; col++, p++) {
+      const td = document.createElement("TD");
+      tr.appendChild(td);
+      td.setAttribute("p", p);
+      const canvas = document.createElement("CANVAS");
+      canvas.setAttribute("p", p);
+      canvas.width = tilesize;
+      canvas.height = tilesize;
+      td.appendChild(canvas);
+      // Alas, pointer capture would be a problem because we want mouseenter for all the canvases.
+      canvas.addEventListener("mousedown", e => onMouseDown(e));
+      canvas.addEventListener("mouseenter", e => onMouseEnter(e));
+    }
+  }
+  window.addEventListener("mouseup", e => onMouseUp(e));
+  redraw(0, 0, colc, rowc);
+  
+  const palette = document.getElementById("palette");
+  let tileid = 0;
+  for (const [token, color, name] of tiledefs) {
+    const row = document.createElement("DIV");
+    row.classList.add("inputRow");
+    const input = document.createElement("INPUT");
+    input.type = "radio";
+    input.name = "palette";
+    input.value = tileid;
+    input.id = `palette${tileid}`;
+    if (name === "EMPTY") input.checked = true;
+    const preview = document.createElement("DIV");
+    preview.style.width = "16px";
+    preview.style.height = "16px";
+    preview.style.backgroundColor = color;
+    const label = document.createElement("LABEL");
+    label.innerText = name;
+    label.setAttribute("for", input.id);
+    row.appendChild(input);
+    row.appendChild(preview);
+    row.appendChild(label);
+    palette.appendChild(row);
+    tileid++;
+  }
+});
+</script>
+</head><body>
+<div id="controls">
+  <input type="file" id="fin" onchange="onFileChanged(event)"/>
+  <input type="button" value="save" onclick="onSave()"/>
+  <div id="toast"></div>
+</div>
+<table id="map"></table>
+<div id="palette"></div>
+</body></html>
