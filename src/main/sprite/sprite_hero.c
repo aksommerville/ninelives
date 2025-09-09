@@ -288,7 +288,7 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
   } else {
     if ((g.input&SH_BTN_WEST)&&hero_egg_ok(sprite)) {
       EGGCLOCK+=elapsed;
-      if (EGGCLOCK>=0.750) {
+      if (EGGCLOCK>=0.500) {
         struct sprite *egg=sprite_spawn(&sprite_type_egg,sprite->x+(sprite->w>>1)+((sprite->xform&R1B_XFORM_XREV)?-6:-2),sprite->y);
         if (egg) {
           g.score.eggc++;

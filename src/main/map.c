@@ -1,19 +1,19 @@
 #include "game.h"
 
 #define FOR_EACH_MAP \
-  _(m13) \
-  _(m12) \
-  _(m11) \
-  _(m10) \
-  _(m9) \
-  _(m8) \
-  _(m7) \
-  _(m6) \
-  _(m2) \
-  _(m1) \
-  _(m3) \
-  _(m4) \
-  _(m5)
+  _(m3)  /* EASY. must be first */ \
+  _(m13) /* EASYISH. switch above */ \
+  _(m8)  /* EASYISH. burn or catladder */ \
+  _(m12) /* EASYISH. middle tower */ \
+  _(m9)  /* EASYISH. long jump on spikes */ \
+  _(m7)  /* EASYISH. die until fly */ \
+  _(m1)  /* EASYISH. martyr switch */ \
+  _(m4)  /* EASYISH. catbridge */ \
+  _(m6)  /* EASY. lay eight eggs */ \
+  _(m5)  /* HARDISH. catladder */ \
+  _(m2)  /* HARDISH. switch twice (or catbridge the spikes) */ \
+  _(m11) /* HARD. spikes staircase */ \
+  _(m10) /* HARD. spiky ceiling */ \
   
 #define _(tag) \
   extern const unsigned char tag[]; \
