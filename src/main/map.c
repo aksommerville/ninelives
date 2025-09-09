@@ -1,6 +1,12 @@
 #include "game.h"
 
 #define FOR_EACH_MAP \
+  _(m13) \
+  _(m12) \
+  _(m11) \
+  _(m10) \
+  _(m9) \
+  _(m8) \
   _(m7) \
   _(m6) \
   _(m2) \
@@ -104,7 +110,7 @@ void render_bgbits(int initial) {
         // Each SPIKE tile must have one EMPTY cardinal neighbor opposite a WALL one.
         case TILE_SPIKES: {
             uint8_t xform;
-            #define emptyish(p) ((srcp[p]==TILE_EMPTY)||(srcp[p]==TILE_GATE0)||(srcp[p]==TILE_GATE1))
+            #define emptyish(p) ((srcp[p]==TILE_EMPTY)||(srcp[p]==TILE_GATE0)||(srcp[p]==TILE_GATE1)||(srcp[p]==TILE_DOOR))
             if ((emptyish(-COLC-2))&&(srcp[COLC+2]==TILE_WALL)) xform=0; // up
             else if ((emptyish(-1))&&(srcp[1]==TILE_WALL)) xform=R1B_XFORM_SWAP|R1B_XFORM_XREV; // left
             else if ((emptyish(1))&&(srcp[-1]==TILE_WALL)) xform=R1B_XFORM_SWAP|R1B_XFORM_YREV; // right

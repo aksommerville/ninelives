@@ -29,7 +29,7 @@ static const int flyv[]={
 static const int flyc=sizeof(flyv)/sizeof(flyv[0]);
 
 static void _hero_init(struct sprite *sprite) {
-  sprite->tileid=0x10;
+  sprite->tileid=0; // Snaps to 0x10 at the first update; that's our "first update" signal.
   sprite->xform=0;
   sprite->xbgr=0xff000000;
   sprite->solid=1;
@@ -259,6 +259,16 @@ static void hero_burninate(struct sprite *sprite) {
 
 static void _hero_update(struct sprite *sprite,double elapsed) {
 
+  /* First update?
+   * Double-check the door direction; when we initialized, the door might not have existed yet.
+   */
+  if (!sprite->tileid) {
+    sprite->tileid=0x10;
+    int col=(sprite->x+(sprite->w>>1))/TILESIZE;
+    if (col<g.doorcol) sprite->xform=R1B_XFORM_XREV;
+    else sprite->xform=0;
+  }
+
   /* If the hatch clock is still ticking, tick it and nothing else.
    */
   if (HATCHCLOCK>0.0) {
@@ -386,6 +396,7 @@ static void _hero_render(struct sprite *sprite) {
   int dstx=sprite->x;
   int dsty=sprite->y;
   uint8_t tileid=sprite->tileid;
+  if (!tileid) tileid=0x10; // In case we render before the first update (could happen in a hatch case).
   if (ANIMFRAME&&SEATED) tileid++;
   if (FLAMING) tileid+=3;
   if (EGGCLOCK>0.0) {

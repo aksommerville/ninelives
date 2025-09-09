@@ -15,7 +15,7 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [ ] Remove AUX1-to-quit before release, at least for web.
 - [ ] Eliminate persistence if we're not keeping a high score. Are we? No, no space for it.
 - [x] Face the door at init and hatch.
-- [ ] 13 sensible maps.
+- [x] 13 sensible maps.
 - [ ] Put maps in order.
 - [ ] "reset level" key.
 
