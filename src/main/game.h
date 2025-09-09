@@ -13,6 +13,12 @@
 #define TILE_LASER 3
 #define TILE_HERO 4
 #define TILE_DOOR 5
+#define TILE_SWITCH0 6
+#define TILE_SWITCH1 7
+#define TILE_GATE0 8 /* closed */
+#define TILE_GATE1 9 /* open */
+#define TILE_BURNABLE0 10
+#define TILE_BURNABLE1 11 /* burnt */
 
 #include <stdint.h>
 #include "shovel/shovel.h"
@@ -31,6 +37,7 @@ extern struct g {
    */
   uint8_t lmap[(COLC+2)*(ROWC+2)];
   int mapid;
+  int doorcol; // Captured during load, cat needs it when spawning.
 
   struct sprite spritev[SPRITE_LIMIT];
   int spritec;
@@ -47,6 +54,8 @@ extern struct g {
 
 int render_init();
 
+void render_bgbits(int initial);
+
 int load_map(int id);
 
 // [noteida 0..63,noteidz 0..63,level 0..31,duration 16ms]
@@ -54,6 +63,7 @@ int load_map(int id);
 #define SFX_jump   "\x20\x28\x10\x10"
 #define SFX_flap   "\x18\x14\x08\x0c"
 #define SFX_layegg "\x24\x22\x0c\x14"
+#define SFX_gate   "\x30\x38\x0c\x0c"
 
 #if USE_native
   #include <stdio.h>

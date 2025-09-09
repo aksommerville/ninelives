@@ -29,53 +29,18 @@ static uint8_t get_lmap_neighbors(const uint8_t *v) {
   if (v[ COLC+3]==*v) dst|=0x01;
   return dst;
 }
-
-static int load_map_bin(const uint8_t *v,int c) {
-
-  // Default (lmap).
-  memset(g.lmap,TILE_WALL,sizeof(g.lmap));
-  
-  // Decode (v) into (lmap).
-  int dstx=1,dsty=1,srcp=0;
-  while (srcp<c) {
-    uint8_t cmd=v[srcp++];
-    uint8_t tileid,count=1;
-         if ((cmd&0xc0)==0x00) { tileid=TILE_EMPTY; count=(cmd&0x3f)+1; }
-    else if ((cmd&0xc0)==0x40) { tileid=TILE_WALL; count=(cmd&0x3f)+1; }
-    else if ((cmd&0xf0)==0x80) { tileid=TILE_SPIKES; count=(cmd&0x0f)+1; }
-    else if (cmd==0xc0) tileid=TILE_HERO;
-    else if (cmd==0xc1) tileid=TILE_LASER;
-    else if (cmd==0xc2) tileid=TILE_DOOR;
-    else {
-      fprintf(stderr,"Unknown map command 0x%02x.\n",cmd);
-      return -2;
-    }
-    while (count-->0) {
-      if (dstx>=COLC+1) {
-        dstx=1;
-        dsty++;
-        if (dsty>=ROWC+1) goto _done_tiles_;
-      }
-      g.lmap[dsty*(COLC+2)+dstx]=tileid;
-      dstx++;
-    }
-  }
- _done_tiles_:;
-  
-  // Reset sprites and such.
-  g.spritec=0;
-  g.eggc=8;
-  g.score.catc++;
+ 
+void render_bgbits(int initial) {
  
   // Render bgbits, joining neighbors and such on the fly.
   // We'll also generate sprites in this pass.
   const uint32_t bgcolor=0xffe0b020;
   const uint8_t *srcrow=g.lmap+COLC+3;
-  int row=0;
-  for (dsty=0;row<ROWC;row++,dsty+=TILESIZE,srcrow+=COLC+2) {
+  int row=0,dsty=0;
+  for (;row<ROWC;row++,dsty+=TILESIZE,srcrow+=COLC+2) {
     const uint8_t *srcp=srcrow;
-    int col=0;
-    for (dstx=0;col<COLC;col++,dstx+=TILESIZE,srcp++) {
+    int col=0,dstx=0;
+    for (;col<COLC;col++,dstx+=TILESIZE,srcp++) {
       switch (*srcp) {
       
         // EMPTY is a flat color, not even a tile.
@@ -143,15 +108,17 @@ static int load_map_bin(const uint8_t *v,int c) {
             else if ((srcp[COLC+2]==TILE_EMPTY)&&(srcp[-COLC-2]==TILE_WALL)) xform=R1B_XFORM_XREV|R1B_XFORM_YREV; // down
             else {
               fprintf(stderr,"Spike must have cardinal WALL and EMPTY neighbors opposite each other.\n");
-              return -1;
+              return;
             }
             r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,24,0,TILESIZE,TILESIZE,bgcolor,0xfffff8f0,xform);
           } break;
           
         // HERO becomes EMPTY after we note the position.
         case TILE_HERO: {
-            struct sprite *sprite=sprite_spawn(&sprite_type_hero,col*TILESIZE,row*TILESIZE);
-            if (!sprite) return -1;
+            if (initial) {
+              struct sprite *sprite=sprite_spawn(&sprite_type_hero,col*TILESIZE,row*TILESIZE);
+              if (!sprite) return;
+            }
             goto _EMPTY_;
           }
         
@@ -164,11 +131,72 @@ static int load_map_bin(const uint8_t *v,int c) {
         
         // DOOR: Simple tile.
         case TILE_DOOR: {
+            g.doorcol=dstx/TILESIZE;
             r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,32,0,TILESIZE,TILESIZE,bgcolor,0xff203050,0);
           } break;
+          
+        case TILE_SWITCH0: {
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,64,0,TILESIZE,TILESIZE,bgcolor,0xffffe0c0,0);
+          } break;
+        case TILE_SWITCH1: {
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,64,0,TILESIZE,TILESIZE,bgcolor,0xffe0ffc0,R1B_XFORM_YREV);
+          } break;
+          
+        case TILE_GATE0: {
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,64,16,TILESIZE,TILESIZE,0xff604020,0xff302010,0);
+          } break;
+        case TILE_GATE1: goto _EMPTY_;
+          
+        case TILE_BURNABLE0: {
+            r1b_img32_blit_img1(&g.bgbits,&g.graphics,dstx,dsty,32,16,TILESIZE,TILESIZE,0xff204060,0xff102030,0);
+          } break;
+        case TILE_BURNABLE1: goto _EMPTY_;
       }
     }
   }
+}
+
+static int load_map_bin(const uint8_t *v,int c) {
+
+  // Default (lmap).
+  memset(g.lmap,TILE_WALL,sizeof(g.lmap));
+  
+  // Decode (v) into (lmap).
+  int dstx=1,dsty=1,srcp=0;
+  while (srcp<c) {
+    uint8_t cmd=v[srcp++];
+    uint8_t tileid,count=1;
+         if ((cmd&0xc0)==0x00) { tileid=TILE_EMPTY; count=(cmd&0x3f)+1; }
+    else if ((cmd&0xc0)==0x40) { tileid=TILE_WALL; count=(cmd&0x3f)+1; }
+    else if ((cmd&0xf0)==0x80) { tileid=TILE_SPIKES; count=(cmd&0x0f)+1; }
+    else if (cmd==0xc0) tileid=TILE_HERO;
+    else if (cmd==0xc1) tileid=TILE_LASER;
+    else if (cmd==0xc2) tileid=TILE_DOOR;
+    else if (cmd==0xc3) tileid=TILE_SWITCH0;
+    else if (cmd==0xc4) tileid=TILE_GATE0;
+    else if (cmd==0xc5) tileid=TILE_BURNABLE0;
+    else {
+      fprintf(stderr,"Unknown map command 0x%02x.\n",cmd);
+      return -2;
+    }
+    while (count-->0) {
+      if (dstx>=COLC+1) {
+        dstx=1;
+        dsty++;
+        if (dsty>=ROWC+1) goto _done_tiles_;
+      }
+      g.lmap[dsty*(COLC+2)+dstx]=tileid;
+      dstx++;
+    }
+  }
+ _done_tiles_:;
+  
+  // Reset sprites and such.
+  g.spritec=0;
+  g.eggc=8;
+  g.score.catc++;
+  
+  render_bgbits(1);
 
   return 0;
 }

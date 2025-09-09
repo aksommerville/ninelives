@@ -10,6 +10,9 @@
 #define TILE_LASER 3
 #define TILE_HERO 4
 #define TILE_DOOR 5
+#define TILE_SWITCH 6
+#define TILE_GATE 7
+#define TILE_BURNABLE 8
 
 /* Compile map.
  */
@@ -35,6 +38,9 @@ int tool_convert_mapbin_maptext(struct sr_encoder *dst,const char *src,int srcc,
       else if ((src[0]=='L')&&(src[1]=='l')) *mapp=TILE_LASER;
       else if ((src[0]=='H')&&(src[1]=='h')) *mapp=TILE_HERO;
       else if ((src[0]=='D')&&(src[1]=='d')) *mapp=TILE_DOOR;
+      else if ((src[0]=='W')&&(src[1]=='w')) *mapp=TILE_SWITCH;
+      else if ((src[0]=='G')&&(src[1]=='g')) *mapp=TILE_GATE;
+      else if ((src[0]=='B')&&(src[1]=='b')) *mapp=TILE_BURNABLE;
       else {
         fprintf(stderr,"%s:%d: Unknown tile '%.2s'.\n",path,row+1,src);
         return -2;
@@ -88,6 +94,9 @@ int tool_convert_mapbin_maptext(struct sr_encoder *dst,const char *src,int srcc,
       case TILE_LASER: while (c-->0) sr_encode_u8(dst,0xc1); break;
       case TILE_HERO: while (c-->0) sr_encode_u8(dst,0xc0); break;
       case TILE_DOOR: while (c-->0) sr_encode_u8(dst,0xc2); break;
+      case TILE_SWITCH: while (c-->0) sr_encode_u8(dst,0xc3); break;
+      case TILE_GATE: while (c-->0) sr_encode_u8(dst,0xc4); break;
+      case TILE_BURNABLE: while (c-->0) sr_encode_u8(dst,0xc5); break;
       default: {
           fprintf(stderr,"%s:%d: map tile 0x%02x\n",__FILE__,__LINE__,tileid);
           return -2;

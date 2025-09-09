@@ -48,6 +48,7 @@ static void gameover_update(double elapsed) {
     g.score.catc=0;
     g.score.restartc=0;
     load_map(1);
+    sh_ms("\x02\x02",2); // 01=nine_lives(REMOVED), 02=get_over_here, 03=caught_the_mouse(REMOVED)
   }
   
   // First time we update, draw the framebuffer. It's static, so no need to do it again after.
@@ -111,6 +112,7 @@ void shm_update(double elapsed) {
       g.term=0.0;
       if (load_map(g.mapid+1)<0) {
         g.gameover=1;
+        sh_ms("\x02\x00",2); // 01=nine_lives(REMOVED), 02=get_over_here, 03=caught_the_mouse(REMOVED)
       }
     }
   }

@@ -7,11 +7,12 @@ Entry for js13k 2025, theme "BLACK CAT".
 ## TODO
 
 - [ ] Remove Laser.
-- [ ] Breathing fire - burn things.
+- [x] Switchable gates.
+- [x] Breathing fire - burn things.
 - [ ] Output video sizing is imperfect. Visible especially at 1x. (xegl). Update Shovel if we fix it.
 - [ ] Remove AUX1-to-quit before release, at least for web.
 - [ ] Eliminate persistence if we're not keeping a high score. Are we? No, no space for it.
-- [ ] Face the door at init and hatch.
+- [x] Face the door at init and hatch.
 - [ ] 13 sensible maps.
 - [ ] Put maps in order.
 
@@ -44,6 +45,9 @@ Input is text, a picture of the map using two characters per tile:
  - `Ll` = laser
  - `Hh` = hero spawn
  - `Dd` = door
+ - `Ww` = switch
+ - `Gg` = gate
+ - `Bb` = burnable
 
 There's 220 tiles per map, of which the overwhelming majority will be empty and wall, often in long runs.
 
@@ -55,6 +59,9 @@ There's 220 tiles per map, of which the overwhelming majority will be empty and 
 11000000 : Spawn point (empty).
 11000001 : Laser.
 11000010 : Door.
+11000011 : Switch.
+11000100 : Gate.
+11000101 : Burnable.
 11xxxxxx : Reserved.
 ```
 

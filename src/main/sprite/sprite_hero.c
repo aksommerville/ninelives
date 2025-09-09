@@ -7,6 +7,8 @@
 #define FLAMETHROWABLE sprite->iv[4]
 #define FLAMING sprite->iv[5]
 #define EGGED sprite->iv[6]
+#define PVCOL sprite->iv[7]
+#define PVROW sprite->iv[8]
 #define ANIMCLOCK sprite->fv[0]
 #define FLAPCLOCK sprite->fv[1]
 #define EGGCLOCK sprite->fv[2]
@@ -32,6 +34,8 @@ static void _hero_init(struct sprite *sprite) {
   sprite->xbgr=0xff000000;
   sprite->solid=1;
   JUMPP=100;
+  int col=(sprite->x+(sprite->w>>1))/TILESIZE;
+  if (col<g.doorcol) sprite->xform=R1B_XFORM_XREV;
 }
 
 /* Physics tests.
@@ -41,6 +45,8 @@ static int hero_lmcell_impassable(uint8_t tile) {
   switch (tile) {
     case TILE_WALL:
     case TILE_LASER:
+    case TILE_GATE0:
+    case TILE_BURNABLE0:
       return 1;
   }
   return 0;
@@ -199,7 +205,7 @@ static void hero_hurt(struct sprite *sprite,int col,int row) {
     if (kitten) {
       kitten->iv[2]=(egg->iv[0]<=4); // WINGS
       kitten->iv[4]=(egg->iv[0]==1); // FLAMETHROWABLE
-      kitten->fv[3]=0.500; // HATCHCLOCK
+      kitten->fv[3]=0.333; // HATCHCLOCK
       hero_force_initial_position(kitten);
     }
   }
@@ -212,6 +218,40 @@ static void hero_win(struct sprite *sprite,int col,int row) {
   sprite->defunct=1;
   //TODO Animate door?
   g.term=1.000;
+}
+
+/* Throw a switch.
+ */
+ 
+static void throw_switch(int col,int row) {
+  SFX(gate);
+  int p=(row+1)*(COLC+2)+1+col;
+  uint8_t totileid;
+  if (g.lmap[p]==TILE_SWITCH0) {
+    g.lmap[p]=TILE_SWITCH1;
+    totileid=TILE_GATE1;
+  } else {
+    g.lmap[p]=TILE_SWITCH0;
+    totileid=TILE_GATE0;
+  }
+  uint8_t *v=g.lmap;
+  int i=(ROWC+2)*(COLC+2);
+  for (;i-->0;v++) if ((*v==TILE_GATE0)||(*v==TILE_GATE1)) *v=totileid;
+  render_bgbits(0);
+}
+
+/* Check flamethrower.
+ */
+ 
+static void hero_burninate(struct sprite *sprite) {
+  int col=PVCOL,row=PVROW;
+  if (sprite->xform&R1B_XFORM_XREV) col++; else col--;
+  if ((col<0)||(col>=COLC)||(row<0)||(row>=ROWC)) return;
+  int p=(row+1)*(COLC+2)+1+col;
+  if (g.lmap[p]==TILE_BURNABLE0) {
+    g.lmap[p]=TILE_BURNABLE1;
+    render_bgbits(0);
+  }
 }
 
 /* Update.
@@ -228,10 +268,10 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
 
   /* Lay eggs and breathe fire, as cats do.
    */
-  if (FLAMETHROWABLE) {
+  if (!g.eggc) {
     if (g.input&SH_BTN_WEST) {
       FLAMING=1;
-      //TODO deal flamethrower damage
+      hero_burninate(sprite);
     } else {
       FLAMING=0;
     }
@@ -328,10 +368,13 @@ static void _hero_update(struct sprite *sprite,double elapsed) {
    */
   int col=(sprite->x+(sprite->w>>1))/TILESIZE;
   int row=(sprite->y+(sprite->h>>1))/TILESIZE;
-  if ((col>=0)&&(col<COLC)&&(row>=0)&&(row<ROWC)) {
+  if ((col>=0)&&(col<COLC)&&(row>=0)&&(row<ROWC)&&((col!=PVCOL)||(row!=PVROW))) {
+    PVCOL=col;
+    PVROW=row;
     switch (g.lmap[(row+1)*(COLC+2)+1+col]) {
       case TILE_SPIKES: hero_hurt(sprite,col,row); break;
       case TILE_DOOR: hero_win(sprite,col,row); break;
+      case TILE_SWITCH0: case TILE_SWITCH1: throw_switch(col,row); break;
     }
   }
 }
