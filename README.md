@@ -18,7 +18,7 @@ Entry for js13k 2025, theme "BLACK CAT".
 - [x] 13 sensible maps.
 - [x] Put maps in order.
 - [x] "reset level" key.
-- [ ] Promo pics.
+- [x] Promo pics.
 - - js13k cover: 320x320 (<=50 kb)
 - - js13k hero: 800x500 (<=200 kb)
 - - itch cover: 630x500
